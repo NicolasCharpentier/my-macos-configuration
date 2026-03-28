@@ -1,0 +1,11 @@
+#!/bin/bash
+
+options=(
+    style=round
+    width=6.0
+    hidpi=on
+    active_color="glow(0xFFE1A860)"
+    inactive_color="0x80555555"
+)
+
+borders "${options[@]}"
