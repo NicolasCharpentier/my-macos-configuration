@@ -71,7 +71,7 @@ on-mode-changed = []
     inner.horizontal = 10#30
     inner.vertical =   0#30
     outer.left =       10#30
-    outer.bottom =     0#30
+    outer.bottom =     10#30
     outer.top =        0#10
     outer.right =      10#30
 
