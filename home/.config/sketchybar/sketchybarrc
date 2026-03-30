@@ -42,6 +42,29 @@ default=(
 sketchybar --default "${default[@]}"
 
 sketchybar --add event aerospace_workspace_change
+sketchybar --add event aerospace_mode_change
+
+# SERVICE mode label (hidden by default, shown when entering service mode)
+sketchybar --add item service.label left \
+    --set service.label \
+        drawing=off \
+        background.drawing=on \
+        background.color=0xffe1a860 \
+        background.corner_radius=5 \
+        background.height=25 \
+        icon.drawing=off \
+        label="SERVICE" \
+        label.font="Hack Nerd Font:Bold:14.0" \
+        label.color=0xff1e1e2e \
+        label.padding_left=10 \
+        label.padding_right=10
+
+# Mode watcher: toggles SERVICE label vs unified view
+sketchybar --add item mode.watcher left \
+    --subscribe mode.watcher aerospace_mode_change \
+    --set mode.watcher \
+        drawing=off \
+        script="$PLUGIN_DIR/mode.sh"
 
 ##### Unified monitor+workspace view #####
 
