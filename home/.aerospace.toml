@@ -111,7 +111,7 @@ on-mode-changed = []
     inner.vertical =   0 #30
     outer.left =       10 #30
     outer.bottom =     10 #30
-    outer.top =        40 # SketchyBar height
+    outer.top =        [{ monitor."Built-in.*" = 5 }, 40] # SketchyBar height
     outer.right =      10 #30
 
 # 'main' binding mode declaration
@@ -197,15 +197,16 @@ on-mode-changed = []
     cmd-alt-9 = 'workspace 9'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
-    cmd-alt-shift-1 = 'move-node-to-workspace 1'
-    cmd-alt-shift-2 = 'move-node-to-workspace 2'
-    cmd-alt-shift-3 = 'move-node-to-workspace 3'
-    cmd-alt-shift-4 = 'move-node-to-workspace 4'
-    cmd-alt-shift-5 = 'move-node-to-workspace 5'
-    cmd-alt-shift-6 = 'move-node-to-workspace 6'
-    cmd-alt-shift-7 = 'move-node-to-workspace 7'
-    cmd-alt-shift-8 = 'move-node-to-workspace 8'
-    cmd-alt-shift-9 = 'move-node-to-workspace 9'
+    # Each move is followed by a SketchyBar trigger so the bar updates immediately
+    cmd-alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
+    cmd-alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$(aerospace list-workspaces --focused)']
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     cmd-alt-tab = 'workspace-back-and-forth'
