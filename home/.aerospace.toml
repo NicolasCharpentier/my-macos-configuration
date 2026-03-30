@@ -111,7 +111,7 @@ on-mode-changed = []
     inner.vertical =   0 #30
     outer.left =       10 #30
     outer.bottom =     10 #30
-    outer.top =        37 # SketchyBar height
+    outer.top =        40 # SketchyBar height
     outer.right =      10 #30
 
 # 'main' binding mode declaration

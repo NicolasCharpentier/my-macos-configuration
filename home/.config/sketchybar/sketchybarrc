@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see FelixKratz's dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+sketchybar --bar position=top \
+                 height=37 \
+                 blur_radius=30 \
+                 color=0x00000000 \
+                 sticky=off \
+                 padding_left=10 \
+                 padding_right=10
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=5
+  padding_right=5
+  icon.font="Hack Nerd Font:Bold:17.0"
+  label.font="Hack Nerd Font:Bold:14.0"
+  icon.color=0xffffffff
+  label.color=0xffffffff
+  icon.padding_left=4
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+sketchybar --add event aerospace_workspace_change
+
+##### Monitor Indicators #####
+# All monitors in a single block with separators. Focused = white bg.
+
+MONITOR_IDS=($(aerospace list-monitors --format '%{monitor-id}'))
+MONITOR_ITEMS=()
+FIRST=true
+
+for mid in "${MONITOR_IDS[@]}"; do
+    MNAME=$(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}' | grep "^${mid}|" | cut -d'|' -f2)
+
+    # Add separator between monitors (not before the first one)
+    if [ "$FIRST" = true ]; then
+        FIRST=false
+    else
+        sketchybar --add item monitor.sep.$mid left \
+            --set monitor.sep.$mid \
+                icon="|" \
+                icon.font="Hack Nerd Font:Regular:16.0" \
+                icon.color=0x60ffffff \
+                icon.padding_left=0 \
+                icon.padding_right=0 \
+                label.drawing=off \
+                padding_left=0 \
+                padding_right=0 \
+                background.drawing=off
+    fi
+
+    sketchybar --add item monitor.$mid left \
+        --subscribe monitor.$mid aerospace_workspace_change mouse.entered mouse.exited \
+        --set monitor.$mid \
+            background.corner_radius=5 \
+            background.height=25 \
+            background.drawing=off \
+            icon.drawing=off \
+            label.font="Hack Nerd Font:Bold:14.0" \
+            label.padding_left=8 \
+            label.padding_right=8 \
+            padding_left=0 \
+            padding_right=0 \
+            popup.background.color=0xe0202020 \
+            popup.background.corner_radius=8 \
+            popup.background.border_color=0xffffffff \
+            popup.background.border_width=1 \
+            script="$PLUGIN_DIR/monitors.sh $mid '$MNAME'"
+    MONITOR_ITEMS+=("monitor.$mid")
+done
+
+# Bracket: groups all monitors into one bordered block
+sketchybar --add bracket monitors "${MONITOR_ITEMS[@]}" \
+    --set monitors \
+        background.drawing=on \
+        background.color=0x00000000 \
+        background.border_color=0xffffffff \
+        background.border_width=1 \
+        background.corner_radius=5 \
+        background.height=25
+
+# Separator between monitors block and workspaces
+sketchybar --add item monitors_sep left \
+    --set monitors_sep \
+        icon="|" \
+        icon.font="Hack Nerd Font:Regular:16.0" \
+        icon.color=0x40ffffff \
+        icon.padding_left=6 \
+        icon.padding_right=6 \
+        label.drawing=off \
+        background.drawing=off
+
+##### AeroSpace Workspace Indicators #####
+# Instead of native Mission Control spaces, we use AeroSpace workspaces.
+# AeroSpace triggers the custom event via exec-on-workspace-change
+# in ~/.aerospace.toml. Each workspace item highlights when focused
+# and is clickable to switch.
+
+for sid in $(aerospace list-workspaces --all); do
+    sketchybar --add item space.$sid left \
+        --subscribe space.$sid aerospace_workspace_change mouse.entered mouse.exited \
+        --set space.$sid \
+            background.color=0xffe1a860 \
+            background.corner_radius=5 \
+            background.height=25 \
+            background.drawing=off \
+            background.border_color=0xffffffff \
+            background.border_width=1 \
+            icon="$sid" \
+            icon.font="Hack Nerd Font:Bold:14.0" \
+            icon.padding_left=7 \
+            icon.padding_right=2 \
+            label.drawing=on \
+            label.font="sketchybar-app-font:Regular:14.0" \
+            label.padding_left=2 \
+            label.padding_right=7 \
+            popup.background.color=0xe0202020 \
+            popup.background.corner_radius=8 \
+            popup.background.border_color=0xffffffff \
+            popup.background.border_width=1 \
+            click_script="aerospace workspace $sid" \
+            script="$PLUGIN_DIR/aerospace.sh $sid"
+done
+
+##### Adding Right Items #####
+# In the same way as the left items we can add items to the right side.
+# Additional position (e.g. center) are available, see:
+# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+# Some items refresh on a fixed cycle, e.g. the clock runs its script once
+# every 10s. Other items respond to events they subscribe to, e.g. the
+# volume.sh script is only executed once an actual change in system audio
+# volume is registered. More info about the event system can be found here:
+# https://felixkratz.github.io/SketchyBar/config/events
+
+sketchybar --add item clock right \
+           --set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
+           --add item volume right \
+           --set volume script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change \
+           --add item battery right \
+           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
