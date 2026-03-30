@@ -8,7 +8,6 @@ if [ "$SENDER" = "mouse.entered" ]; then
     # Remove old popup items for this workspace item
     ESCAPED=$(echo "$NAME" | sed 's/\./\\./g')
     sketchybar --remove "/${ESCAPED}\.win\..*/" 2>/dev/null
-
     # Build popup items from window list
     WINDOWS=$(aerospace list-windows --workspace "$SID" --format '%{app-name}|%{window-title}' 2>/dev/null)
     IDX=0

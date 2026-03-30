@@ -142,8 +142,9 @@ for did in "${DISPLAY_IDS[@]}"; do
                     popup.background.corner_radius=8 \
                     popup.background.border_color=0xffffffff \
                     popup.background.border_width=1 \
-                    click_script="aerospace workspace $sid" \
+                    click_script="$PLUGIN_DIR/rename_workspace.sh $sid" \
                     script="$PLUGIN_DIR/unified_popup.sh $sid"
+
         done
     done
 done

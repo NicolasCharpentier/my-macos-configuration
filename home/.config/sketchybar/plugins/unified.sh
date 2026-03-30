@@ -35,6 +35,15 @@ while IFS='|' read -r ws mid; do
     [ -n "$ws" ] && WS_MON["$ws"]="$mid"
 done < <(aerospace list-workspaces --all --format '%{workspace}|%{monitor-id}')
 
+# Read workspace custom names
+declare -A WS_NAMES
+NAMES_FILE="$HOME/.config/aerospace/workspace-names"
+if [ -f "$NAMES_FILE" ]; then
+    while IFS='|' read -r ws wname; do
+        [ -n "$ws" ] && WS_NAMES["$ws"]="$wname"
+    done < "$NAMES_FILE"
+fi
+
 # Pre-fetch all window icons per workspace
 declare -A WS_ICONS
 declare -A WS_WIN_COUNT
@@ -82,14 +91,25 @@ for did in "${DISPLAY_IDS[@]}"; do
                     continue
                 fi
 
+                # Append description to icon field if set
+                WS_NAME="${WS_NAMES[$sid]}"
+                if [ -n "$WS_NAME" ]; then
+                    [ ${#WS_NAME} -gt 15 ] && WS_NAME="${WS_NAME:0:12}..."
+                    WS_ICON="$sid $WS_NAME "
+                else
+                    WS_ICON="$sid"
+                fi
+
                 if [ "$sid" = "$FOCUSED_WS" ]; then
                     CMD+=(--set "$ITEM" drawing=on
                         background.drawing=on background.color=0xffe1a860 background.border_color=0xffe1a860
-                        icon.color=0xff1e1e2e label="$ICON_STRIP" label.color=0xff1e1e2e)
+                        icon="$WS_ICON" icon.color=0xff1e1e2e
+                        label="$ICON_STRIP" label.color=0xff1e1e2e)
                 else
                     CMD+=(--set "$ITEM" drawing=on
                         background.drawing=on background.color=0x00000000 background.border_color=0xffffffff
-                        icon.color=0xffffffff label="$ICON_STRIP" label.color=0xffffffff)
+                        icon="$WS_ICON" icon.color=0xffffffff
+                        label="$ICON_STRIP" label.color=0xffffffff)
                 fi
             else
                 CMD+=(--set "$ITEM" drawing=off)
