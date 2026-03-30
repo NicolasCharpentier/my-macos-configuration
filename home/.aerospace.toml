@@ -36,7 +36,15 @@ config-version = 2
 
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = ['exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=6.0 style=round hidpi=on']
+after-startup-command = [
+    'exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=6.0 style=round hidpi=on',
+    'exec-and-forget sketchybar',
+]
+
+# Notify SketchyBar about workspace change
+exec-on-workspace-change = ['/bin/bash', '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+]
 
 # Start AeroSpace at login
 start-at-login = true
@@ -64,6 +72,8 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+# NEW TEST : on va encore plus loin
+on-focus-changed = "move-mouse window-lazy-center"
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
@@ -101,7 +111,7 @@ on-mode-changed = []
     inner.vertical =   0 #30
     outer.left =       10 #30
     outer.bottom =     10 #30
-    outer.top =        0 #10
+    outer.top =        37 # SketchyBar height
     outer.right =      10 #30
 
 # 'main' binding mode declaration
