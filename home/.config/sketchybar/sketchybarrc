@@ -154,14 +154,23 @@ done
 # volume is registered. More info about the event system can be found here:
 # https://felixkratz.github.io/SketchyBar/config/events
 
-sketchybar --add item clock right \
-           --set clock update_freq=10 icon= script="$PLUGIN_DIR/clock.sh" \
-           --add item volume right \
-           --set volume script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change \
+sketchybar --add item clock.time right \
+           --set clock.time \
+               update_freq=1 \
+               icon.drawing=off \
+               label.font="Hack Nerd Font:Bold:14.0" \
+               label.color=0xffffffff \
+               script="$PLUGIN_DIR/clock.sh" \
+           --add item clock.date right \
+           --set clock.date \
+               update_freq=60 \
+               icon.drawing=off \
+               label.font="Hack Nerd Font:Bold:14.0" \
+               label.color=0xffffffff \
+               script="$PLUGIN_DIR/date.sh" \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change
+           --subscribe battery system_woke power_source_change \
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
