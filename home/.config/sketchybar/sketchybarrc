@@ -90,10 +90,10 @@ for did in "${DISPLAY_IDS[@]}"; do
                 --set unified.d$did.sep.$mid \
                     display=$did \
                     icon="|" \
-                    icon.font="Hack Nerd Font:Regular:16.0" \
-                    icon.color=0x60ffffff \
-                    icon.padding_left=2 \
-                    icon.padding_right=2 \
+                    icon.font="Hack Nerd Font:Bold:18.0" \
+                    icon.color=0xb0ffffff \
+                    icon.padding_left=4 \
+                    icon.padding_right=4 \
                     label.drawing=off \
                     padding_left=0 \
                     padding_right=0 \

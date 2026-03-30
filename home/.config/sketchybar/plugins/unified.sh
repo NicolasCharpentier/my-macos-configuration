@@ -19,13 +19,15 @@ while IFS='|' read -r arr_id direct_id; do
 done < <(echo "$DISPLAYS_JSON" \
     | python3 -c "import json,sys; [print(f'{d[\"arrangement-id\"]}|{d[\"DirectDisplayID\"]}') for d in json.load(sys.stdin)]")
 
-# Build monitor -> arrangement-id mapping
+# Build monitor -> arrangement-id and monitor -> name mappings
 declare -A MON_TO_ARR
+declare -A MON_NAME
 MONITOR_IDS=()
-while IFS='|' read -r mid appkit; do
+while IFS='|' read -r mid appkit mname; do
     MONITOR_IDS+=("$mid")
     MON_TO_ARR["$mid"]="${DIRECT_TO_ARR[$appkit]:-$appkit}"
-done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-appkit-nsscreen-screens-id}')
+    MON_NAME["$mid"]="$mname"
+done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-appkit-nsscreen-screens-id}|%{monitor-name}')
 
 # Build workspace -> monitor mapping
 declare -A WS_MON
@@ -59,19 +61,12 @@ for did in "${DISPLAY_IDS[@]}"; do
         IS_LOCAL=false; [ "${MON_TO_ARR[$mid]}" = "$did" ] && IS_LOCAL=true
         IS_FOCUSED_MON=false; [ "$mid" = "$FOCUSED_MON" ] && IS_FOCUSED_MON=true
 
-        # Monitor name: gold bg if focused+local, white underline if local, plain otherwise
-        if [ "$IS_FOCUSED_MON" = true ] && [ "$IS_LOCAL" = true ]; then
-            CMD+=(--set "unified.d$did.mon.$mid"
-                background.drawing=on background.color=0xffe1a860 background.height=25 background.y_offset=0
-                label.color=0xff1e1e2e)
-        elif [ "$IS_LOCAL" = true ]; then
-            CMD+=(--set "unified.d$did.mon.$mid"
-                background.drawing=on background.color=0x90ffffff background.height=2 background.y_offset=-11
-                label.color=0xffffffff)
+        # Monitor name: * suffix if local monitor
+        MLABEL="${MON_NAME[$mid]:0:5}"
+        if [ "$IS_LOCAL" = true ]; then
+            CMD+=(--set "unified.d$did.mon.$mid" background.drawing=off label="${MLABEL}*" label.color=0xffffffff)
         else
-            CMD+=(--set "unified.d$did.mon.$mid"
-                background.drawing=off background.height=25 background.y_offset=0
-                label.color=0xffffffff)
+            CMD+=(--set "unified.d$did.mon.$mid" background.drawing=off label="$MLABEL" label.color=0xffffffff)
         fi
 
         for sid in 1 2 3 4 5 6 7 8 9; do
