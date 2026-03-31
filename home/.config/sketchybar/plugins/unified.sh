@@ -49,6 +49,12 @@ if [ -f "$NAMES_FILE" ]; then
     done < "$NAMES_FILE"
 fi
 
+# Get visible workspace per monitor (for non-focused monitor styling)
+declare -A VISIBLE_WS
+while IFS='|' read -r ws mid; do
+    [ -n "$ws" ] && VISIBLE_WS["$ws"]="$mid"
+done < <(aerospace list-workspaces --monitor all --visible --format '%{workspace}|%{monitor-id}')
+
 # Pre-fetch all window icons per workspace
 declare -A WS_ICONS
 declare -A WS_WIN_COUNT
@@ -106,11 +112,19 @@ for did in "${DISPLAY_IDS[@]}"; do
                 fi
 
                 if [ "$sid" = "$FOCUSED_WS" ]; then
+                    # Focused workspace: gold background
                     CMD+=(--set "$ITEM" drawing=on
                         background.drawing=on background.color=0xffe1a860 background.border_color=0xffe1a860
                         icon="$WS_ICON" icon.color=0xff1e1e2e
                         label="$ICON_STRIP" label.color=0xff1e1e2e)
+                elif [ -n "${VISIBLE_WS[$sid]}" ]; then
+                    # Visible workspace on non-active monitor: white background
+                    CMD+=(--set "$ITEM" drawing=on
+                        background.drawing=on background.color=0xffffffff background.border_color=0xffffffff
+                        icon="$WS_ICON" icon.color=0xff1e1e2e
+                        label="$ICON_STRIP" label.color=0xff1e1e2e)
                 else
+                    # Other workspaces: transparent with white border
                     CMD+=(--set "$ITEM" drawing=on
                         background.drawing=on background.color=0x00000000 background.border_color=0xffffffff
                         icon="$WS_ICON" icon.color=0xffffffff
