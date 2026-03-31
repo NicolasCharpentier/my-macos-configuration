@@ -156,6 +156,12 @@ sketchybar --add item unified.controller left \
         drawing=off \
         script="$PLUGIN_DIR/unified.sh"
 
+##### System Stats (stats_provider daemon) #####
+killall stats_provider 2>/dev/null
+stats_provider --all --interval 5 &
+
+sketchybar --add event system_stats
+
 ##### Right Items #####
 sketchybar --add item clock.time right \
            --set clock.time \
@@ -173,7 +179,27 @@ sketchybar --add item clock.time right \
                script="$PLUGIN_DIR/date.sh" \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change
+           --subscribe battery system_woke power_source_change \
+           --add item ram.stats right \
+           --set ram.stats \
+               icon.drawing=off \
+               label="RAM …" \
+               popup.background.color=0xe0202020 \
+               popup.background.corner_radius=8 \
+               popup.background.border_color=0xffffffff \
+               popup.background.border_width=1 \
+               script="$PLUGIN_DIR/stats.sh" \
+           --subscribe ram.stats mouse.entered mouse.exited \
+           --add item cpu.stats right \
+           --set cpu.stats \
+               icon.drawing=off \
+               label="CPU …" \
+               popup.background.color=0xe0202020 \
+               popup.background.corner_radius=8 \
+               popup.background.border_color=0xffffffff \
+               popup.background.border_width=1 \
+               script="$PLUGIN_DIR/stats.sh" \
+           --subscribe cpu.stats system_stats mouse.entered mouse.exited
 
 ##### Auto-update on monitor change #####
 sketchybar --add item display_watcher right \
