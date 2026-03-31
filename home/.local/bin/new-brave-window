@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if pgrep -q "Brave Browser"; then
+  osascript -e '
+  tell application "System Events"
+    tell process "Brave Browser"
+      click menu item "Nouvelle fenêtre" of menu "Fichier" of menu bar 1
+    end tell
+  end tell'
+else
+  open -a "Brave Browser"
+fi

@@ -1,0 +1,5 @@
+B: Brave
+Esc: Exit
+G: Ghostty
+M: Mic
+S: Sketchybar
