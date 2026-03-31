@@ -33,10 +33,18 @@ if [ "$SENDER" = "mouse.entered" ]; then
     done <<< "$WINDOWS"
 
     sketchybar --set "$NAME" popup.drawing=on
+
+    # Auto-hide popup after 5 seconds
+    PIDFILE="/tmp/sketchybar_popup_${NAME}.pid"
+    kill "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null
+    (sleep 5 && sketchybar --set "$NAME" popup.drawing=off) &
+    echo $! > "$PIDFILE"
+
     exit 0
 fi
 
 if [ "$SENDER" = "mouse.exited" ] || [ "$SENDER" = "mouse.exited.global" ]; then
     sketchybar --set "$NAME" popup.drawing=off
+    kill "$(cat "/tmp/sketchybar_popup_${NAME}.pid" 2>/dev/null)" 2>/dev/null
     exit 0
 fi

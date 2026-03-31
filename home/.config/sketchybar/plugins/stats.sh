@@ -46,7 +46,25 @@ if [ "$SENDER" = "mouse.entered" ]; then
         [ -n "$SWP_USAGE" ] && [ "$SWP_USAGE" != "0%" ] && ITEMS+=("Swap|$SWP_USED / $SWP_TOTAL ($SWP_USAGE)")
     fi
 
+    # Top processes (fetched live on hover)
+    if [ "$NAME" = "cpu.stats" ]; then
+        ITEMS+=("─|─────────────")
+        while IFS= read -r line; do
+            pct=$(echo "$line" | awk '{print $1"%"}')
+            cmd=$(echo "$line" | awk '{for(i=2;i<=NF;i++) printf "%s ",$i; print ""}' | sed 's/ $//' | cut -c1-20)
+            ITEMS+=("$cmd|$pct")
+        done < <(ps -arcwwxo "%cpu,comm" | tail -n +2 | head -5)
+    elif [ "$NAME" = "ram.stats" ]; then
+        ITEMS+=("─|─────────────")
+        while IFS= read -r line; do
+            pct=$(echo "$line" | awk '{print $1"%"}')
+            cmd=$(echo "$line" | awk '{for(i=2;i<=NF;i++) printf "%s ",$i; print ""}' | sed 's/ $//' | cut -c1-20)
+            ITEMS+=("$cmd|$pct")
+        done < <(ps -amwwxo "%mem,comm" | tail -n +2 | head -5)
+    fi
+
     # Common items in both popups
+    ITEMS+=("─|─────────────")
     ITEMS+=("Disk|$DISK_USED / $DISK_TOTAL ($DISK_USAGE)")
     [ -n "$UPTIME" ] && ITEMS+=("Up|$UPTIME")
 
@@ -54,23 +72,42 @@ if [ "$SENDER" = "mouse.entered" ]; then
     for entry in "${ITEMS[@]}"; do
         IFS='|' read -r lbl val <<< "$entry"
         ITEM="$NAME.popup.$IDX"
-        sketchybar --add item "$ITEM" popup."$NAME" \
-            --set "$ITEM" \
-                icon="$lbl" \
-                icon.font="Hack Nerd Font:Bold:12.0" \
-                icon.color=0xffaaaaaa \
-                icon.padding_right=8 \
-                label="$val" \
-                label.font="Hack Nerd Font:Regular:12.0" \
-                label.color=0xffffffff
+        if [ "$lbl" = "─" ]; then
+            sketchybar --add item "$ITEM" popup."$NAME" \
+                --set "$ITEM" \
+                    icon="$lbl" \
+                    icon.font="Hack Nerd Font:Regular:8.0" \
+                    icon.color=0xff555555 \
+                    label="$val" \
+                    label.font="Hack Nerd Font:Regular:8.0" \
+                    label.color=0xff555555
+        else
+            sketchybar --add item "$ITEM" popup."$NAME" \
+                --set "$ITEM" \
+                    icon="$lbl" \
+                    icon.font="Hack Nerd Font:Bold:12.0" \
+                    icon.color=0xffaaaaaa \
+                    icon.padding_right=8 \
+                    label="$val" \
+                    label.font="Hack Nerd Font:Regular:12.0" \
+                    label.color=0xffffffff
+        fi
         IDX=$((IDX + 1))
     done
 
     sketchybar --set "$NAME" popup.drawing=on
+
+    # Auto-hide popup after 5 seconds
+    PIDFILE="/tmp/sketchybar_popup_${NAME}.pid"
+    kill "$(cat "$PIDFILE" 2>/dev/null)" 2>/dev/null
+    (sleep 5 && sketchybar --set "$NAME" popup.drawing=off) &
+    echo $! > "$PIDFILE"
+
     exit 0
 fi
 
 if [ "$SENDER" = "mouse.exited" ] || [ "$SENDER" = "mouse.exited.global" ]; then
     sketchybar --set "$NAME" popup.drawing=off
+    kill "$(cat "/tmp/sketchybar_popup_${NAME}.pid" 2>/dev/null)" 2>/dev/null
     exit 0
 fi
