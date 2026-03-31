@@ -184,6 +184,7 @@ sketchybar --add item clock.time right \
            --set mic \
                icon="󰍬" \
                icon.font="Hack Nerd Font:Bold:17.0" \
+               label.drawing=off \
                update_freq=5 \
                script="$PLUGIN_DIR/mic.sh" \
            --subscribe mic mouse.clicked \
