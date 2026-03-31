@@ -38,7 +38,7 @@ config-version = 2
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
     'exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=6.0 style=round hidpi=on',
-    'exec-and-forget sketchybar',
+    'exec-and-forget pgrep -x sketchybar || sketchybar',
 ]
 
 # Notify SketchyBar about workspace change
@@ -226,8 +226,7 @@ on-mode-changed = []
     f = ['layout floating tiling', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
 
-    # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
-    #s = ['layout sticky tiling', 'mode main']
+    s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
 
     cmd-alt-shift-h = ['join-with left', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     cmd-alt-shift-j = ['join-with down', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']

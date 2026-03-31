@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
 
+# On system wake: reload sketchybar to recover from display/render issues.
+# After sleep the bar can become invisible while the process is still alive.
+if [ "$SENDER" = "system_woke" ]; then
+    sleep 2  # let displays settle
+    # If sketchybar is unresponsive, restart it entirely
+    if ! sketchybar --query bar >/dev/null 2>&1; then
+        killall -9 sketchybar 2>/dev/null
+        sleep 1
+        open -a sketchybar
+    else
+        sketchybar --reload
+    fi
+    exit 0
+fi
+
 # Reassign workspace items to the correct display on monitor change.
-# This avoids a full --reload which would cause an infinite loop.
 
 # Build mapping from DirectDisplayID -> arrangement-id using sketchybar
 # (sketchybar's display= property expects arrangement-id, not DirectDisplayID)
