@@ -5,6 +5,11 @@ source "$CONFIG_DIR/plugins/icon_map.sh"
 SID="$1"
 
 if [ "$SENDER" = "mouse.entered" ]; then
+    # Close all other popups first (workspace + stats)
+    sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
+               --set cpu.stats popup.drawing=off \
+               --set ram.stats popup.drawing=off 2>/dev/null
+
     # Remove old popup items for this workspace item
     ESCAPED=$(echo "$NAME" | sed 's/\./\\./g')
     sketchybar --remove "/${ESCAPED}\.win\..*/" 2>/dev/null
@@ -31,7 +36,7 @@ if [ "$SENDER" = "mouse.entered" ]; then
     exit 0
 fi
 
-if [ "$SENDER" = "mouse.exited" ]; then
+if [ "$SENDER" = "mouse.exited" ] || [ "$SENDER" = "mouse.exited.global" ]; then
     sketchybar --set "$NAME" popup.drawing=off
     exit 0
 fi

@@ -118,7 +118,7 @@ for did in "${DISPLAY_IDS[@]}"; do
         # Workspace slots (1-9) for this monitor on this display, initially hidden
         for sid in 1 2 3 4 5 6 7 8 9; do
             sketchybar --add item unified.d$did.ws.$mid.$sid left \
-                --subscribe unified.d$did.ws.$mid.$sid mouse.entered mouse.exited \
+                --subscribe unified.d$did.ws.$mid.$sid mouse.entered mouse.exited mouse.exited.global \
                 --set unified.d$did.ws.$mid.$sid \
                     display=$did \
                     background.color=0xffe1a860 \
@@ -197,7 +197,7 @@ sketchybar --add item clock.time right \
                popup.background.border_color=0xffffffff \
                popup.background.border_width=1 \
                script="$PLUGIN_DIR/stats.sh" \
-           --subscribe ram.stats mouse.entered mouse.exited \
+           --subscribe ram.stats mouse.entered mouse.exited mouse.exited.global \
            --add item cpu.stats right \
            --set cpu.stats \
                icon.drawing=off \
@@ -207,7 +207,7 @@ sketchybar --add item clock.time right \
                popup.background.border_color=0xffffffff \
                popup.background.border_width=1 \
                script="$PLUGIN_DIR/stats.sh" \
-           --subscribe cpu.stats system_stats mouse.entered mouse.exited
+           --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global
 
 ##### Auto-update on monitor change #####
 sketchybar --add item display_watcher right \

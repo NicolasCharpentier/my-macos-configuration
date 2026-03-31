@@ -5,6 +5,11 @@ source "$CONFIG_DIR/plugins/icon_map.sh"
 FOCUSED_WS="$FOCUSED_WORKSPACE"
 [ -z "$FOCUSED_WS" ] && FOCUSED_WS=$(aerospace list-workspaces --focused 2>/dev/null)
 
+# Close all popups on workspace change
+sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
+           --set cpu.stats popup.drawing=off \
+           --set ram.stats popup.drawing=off 2>/dev/null
+
 FOCUSED_MON=$(aerospace list-workspaces --monitor all --visible \
     --format '%{workspace}|%{monitor-id}|%{workspace-is-focused}' 2>/dev/null \
     | grep '|true$' | cut -d'|' -f2)
