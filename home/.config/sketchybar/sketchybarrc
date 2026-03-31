@@ -180,6 +180,13 @@ sketchybar --add item clock.time right \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
            --subscribe battery system_woke power_source_change \
+           --add item mic right \
+           --set mic \
+               icon="󰍬" \
+               icon.font="Hack Nerd Font:Bold:17.0" \
+               update_freq=5 \
+               script="$PLUGIN_DIR/mic.sh" \
+           --subscribe mic mouse.clicked \
            --add item ram.stats right \
            --set ram.stats \
                icon.drawing=off \

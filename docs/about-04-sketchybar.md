@@ -14,7 +14,11 @@ SketchyBar is the standard companion to AeroSpace in the macOS ricing community.
 brew tap FelixKratz/formulae
 brew install sketchybar
 brew install --cask font-hack-nerd-font
+brew tap joncrangle/tap
+brew install sketchybar-system-stats
 ```
+
+[sketchybar-system-stats](https://github.com/joncrangle/sketchybar-system-stats) is a lightweight Rust binary that feeds CPU, RAM, disk, temperature and other system metrics to SketchyBar via a custom event. It runs as a background daemon launched from `sketchybarrc`.
 
 Optionally hide the native menu bar: System Settings > Control Center > "Automatically hide and show the menu bar" > "Always".
 
