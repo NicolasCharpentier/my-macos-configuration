@@ -1,18 +1,25 @@
 #!/usr/bin/env bash
 
-# On system wake: reload sketchybar to recover from display/render issues.
-# After sleep the bar can become invisible while the process is still alive.
+# On system wake: refresh the bar without a full --reload.
+# Calling --reload from within a plugin can cause an infinite loop when the
+# system_woke event is re-delivered to the freshly recreated item.
 if [ "$SENDER" = "system_woke" ]; then
-    sleep 2  # let displays settle
-    # If sketchybar is unresponsive, restart it entirely
-    if ! sketchybar --query bar >/dev/null 2>&1; then
-        killall -9 sketchybar 2>/dev/null
-        sleep 1
-        open -a sketchybar
-    else
-        sketchybar --reload
+    # Prevent concurrent wake handlers
+    LOCKFILE="/tmp/sketchybar_wake.lock"
+    if [ -f "$LOCKFILE" ] && kill -0 "$(cat "$LOCKFILE" 2>/dev/null)" 2>/dev/null; then
+        exit 0
     fi
-    exit 0
+    echo $$ > "$LOCKFILE"
+    trap 'rm -f "$LOCKFILE"' EXIT
+
+    sleep 2  # let displays settle
+
+    # Nudge the bar to force a redraw (fixes invisible bar after sleep)
+    sketchybar --bar y_offset=1
+    sleep 0.2
+    sketchybar --bar y_offset=0
+
+    # Fall through to the display reassignment below
 fi
 
 # Reassign workspace items to the correct display on monitor change.
