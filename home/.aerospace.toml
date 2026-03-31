@@ -16,6 +16,7 @@
 # │   TAB         : Workspace back-and-forth                │
 # │   TAB + MAJ   : Bouger workspace vers autre monitor     │
 # │   ;           : Entrer en mode "service"                │
+# │   ,           : Entrer en mode "shortcuts"              │
 # │                                                         │
 # │ Mode "service" - juste la touche (revient en main auto) │
 # │   ECHAP       : Reload config                           │
@@ -24,6 +25,10 @@
 # │                 (astuce: float+unfloat Ghostty fix      │
 # │                  partiellement le bug des tabs)         │
 # │   BACKSPACE   : Fermer toutes les fenetres sauf active  │
+# │                                                         │
+# │ Mode "shortcuts" - juste la touche (revient en main)    │
+# │   S           : Restart sketchybar                      │
+# │   M           : Toggle mute micro                       │
 # └─────────────────────────────────────────────────────────┘
 
 
@@ -218,6 +223,10 @@ on-mode-changed = []
     #   - (semicolon AZERTY = comma QWERTY)
     cmd-alt-comma = ['mode service', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=service']
 
+    # TOUCHE "," pour entrer en mode shortcuts
+    #   - (comma AZERTY = m QWERTY)
+    cmd-alt-m = ['mode shortcuts', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=shortcuts']
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
@@ -226,12 +235,18 @@ on-mode-changed = []
     f = ['layout floating tiling', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
 
-    s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
-
     cmd-alt-shift-h = ['join-with left', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     cmd-alt-shift-j = ['join-with down', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     cmd-alt-shift-k = ['join-with up', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     cmd-alt-shift-l = ['join-with right', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+
+# 'shortcuts' binding mode declaration.
+[mode.shortcuts.binding]
+    esc = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+    s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
+    # TOUCHE "M" pour toggle mute micro
+    #   - (m AZERTY = semicolon QWERTY)
+    semicolon = ['mode main', 'exec-and-forget SENDER=mouse.clicked NAME=mic ~/.config/sketchybar/plugins/mic.sh; sketchybar --trigger aerospace_mode_change MODE=main'] # toggle mic mute
 
 # Force tiling for undecorated Tauri windows that AeroSpace floats by default
 [[on-window-detected]]

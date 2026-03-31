@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-if [ "$MODE" = "service" ]; then
+if [ "$MODE" = "service" ] || [ "$MODE" = "shortcuts" ]; then
     sketchybar --set '/unified\./' drawing=off \
-               --set service.label drawing=on
+               --set service.label label="$(echo "$MODE" | tr '[:lower:]' '[:upper:]')" drawing=on
 else
     sketchybar --set service.label drawing=off \
                --set '/unified\.d.*\.mon\./' drawing=on \

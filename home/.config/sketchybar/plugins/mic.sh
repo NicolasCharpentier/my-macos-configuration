@@ -33,7 +33,7 @@ CURRENT=$(osascript -e "input volume of (get volume settings)")
 
 if [ "$CURRENT" -eq 0 ]; then
   ICON="󰍭"
-  COLOR="0xffff6666"
+  COLOR="0xffffb3b3"
 else
   ICON="󰍬"
   COLOR="0xffffffff"
