@@ -16,6 +16,8 @@
 # │   BACKSPACE   : Fermer toutes les fenetres sauf active  │
 # │                                                         │
 # │ Mode "shortcuts" - juste la touche (revient en main)    │
+# │   D           : Dodo (sleep)                            │
+# │   L           : Lock écran                              │
 # │   S           : Restart sketchybar                      │
 # │   M           : Toggle mute micro                       │
 # └─────────────────────────────────────────────────────────┘
@@ -130,6 +132,8 @@ on-mode-changed = []
     esc = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     b = ['mode main', 'exec-and-forget ~/.local/bin/new-brave-window', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     g = ['mode main', 'exec-and-forget ~/.local/bin/new-ghostty-window', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+    d = ['mode main', 'exec-and-forget pmset sleepnow', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # dodo (sleep)
+    l = ['mode main', 'exec-and-forget pmset displaysleepnow', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # lock écran
     s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
     # TOUCHE "M" pour toggle mute micro
     #   - (m AZERTY = semicolon QWERTY)
