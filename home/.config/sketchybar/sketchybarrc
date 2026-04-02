@@ -136,8 +136,8 @@ for did in "${DISPLAY_IDS[@]}"; do
                     label.font="sketchybar-app-font:Regular:14.0" \
                     label.padding_left=2 \
                     label.padding_right=7 \
-                    padding_left=0 \
-                    padding_right=0 \
+                    padding_left=2 \
+                    padding_right=2 \
                     drawing=off \
                     popup.background.color=0xe0202020 \
                     popup.background.corner_radius=8 \

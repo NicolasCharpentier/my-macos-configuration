@@ -5,6 +5,10 @@ source "$CONFIG_DIR/plugins/icon_map.sh"
 FOCUSED_WS="$FOCUSED_WORKSPACE"
 [ -z "$FOCUSED_WS" ] && FOCUSED_WS=$(aerospace list-workspaces --focused 2>/dev/null)
 
+# Read previous workspace from persistent file (survives multiple event firings)
+PREV_WS=""
+[ -f /tmp/aerospace-prev-workspace ] && PREV_WS=$(cat /tmp/aerospace-prev-workspace)
+
 # Close all popups on workspace change
 sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
            --set cpu.stats popup.drawing=off \
@@ -124,16 +128,23 @@ for did in "${DISPLAY_IDS[@]}"; do
                     WS_ICON="$sid"
                 fi
 
+
                 if [ "$sid" = "$FOCUSED_WS" ]; then
                     # Focused workspace: gold background
                     CMD+=(--set "$ITEM" drawing=on
                         background.drawing=on background.color=0xffe1a860 background.border_color=0xffe1a860
                         icon="$WS_ICON" icon.color=0xff1e1e2e
                         label="$ICON_STRIP" label.color=0xff1e1e2e)
+                elif [ "$sid" = "$PREV_WS" ]; then
+                    # Previous workspace (alt-tab destination): semi-transparent gold
+                    CMD+=(--set "$ITEM" drawing=on
+                        background.drawing=on background.color=0x99e1a860 background.border_color=0x99e1a860
+                        icon="$WS_ICON" icon.color=0xff1e1e2e
+                        label="$ICON_STRIP" label.color=0xff1e1e2e)
                 elif [ -n "${VISIBLE_WS[$sid]}" ]; then
                     # Visible workspace on non-active monitor: white background
                     CMD+=(--set "$ITEM" drawing=on
-                        background.drawing=on background.color=0xffffffff background.border_color=0xffffffff
+                        background.drawing=on background.color=0xb0ffffff background.border_color=0xb0ffffff
                         icon="$WS_ICON" icon.color=0xff1e1e2e
                         label="$ICON_STRIP" label.color=0xff1e1e2e)
                 else
