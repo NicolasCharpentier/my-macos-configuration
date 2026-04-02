@@ -15,9 +15,9 @@
 # │ LALT+...                                                │
 # │   /           : Toggle tiles H/V                        │
 # │   / + MAJ     : Toggle accordion H/V                    │
-# │   H J K L     : Focus gauche/bas/haut/droite            │
-# │   H J K L+MAJ : Bouger fenetre gauche/bas/haut/droite   │
-# │   Fleches     : Pareil que HJKL (move avec MAJ)         │
+# │   ZQSD        : Focus gauche/bas/haut/droite             │
+# │   ZQSD+MAJ   : Bouger fenetre gauche/bas/haut/droite    │
+# │   Fleches     : Pareil que ZQSD (move avec MAJ)         │
 # │   -           : Resize -50                              │
 # │   =           : Resize +50                              │
 # │   1-9         : Aller au workspace N                    │
@@ -28,7 +28,7 @@
 # │   ,           : Entrer en mode "shortcuts"              │
 # │                                                         │
 # │ LALT+SHIFT+CMD+...                                      │
-# │   H J K L     : Join-with gauche/bas/haut/droite        │
+# │   ZQSD        : Join-with gauche/bas/haut/droite        │
 # └─────────────────────────────────────────────────────────┘
 
 # --- Layout toggle ---
@@ -37,17 +37,17 @@ lalt - 0x2F : aerospace layout tiles horizontal vertical
 # / + SHIFT (AZERTY) → toggle accordion H/V
 lalt + shift - 0x2F : aerospace layout accordion horizontal vertical
 
-# --- Focus (vim + arrows) ---
-lalt - h : aerospace focus left
-lalt - j : aerospace focus down
-lalt - k : aerospace focus up
-lalt - l : aerospace focus right
+# --- Focus (ZQSD + arrows) ---
+lalt - q : aerospace focus left
+lalt - s : aerospace focus down
+lalt - z : aerospace focus up
+lalt - d : aerospace focus right
 
-# --- Move window (vim + arrows) ---
-lalt + shift - h : aerospace move left
-lalt + shift - j : aerospace move down
-lalt + shift - k : aerospace move up
-lalt + shift - l : aerospace move right
+# --- Move window (ZQSD + arrows) ---
+lalt + shift - q : aerospace move left
+lalt + shift - s : aerospace move down
+lalt + shift - z : aerospace move up
+lalt + shift - d : aerospace move right
 
 # --- Resize ---
 # - (AZERTY) → resize -50
@@ -91,7 +91,7 @@ lalt - 0x2B : aerospace mode service; sketchybar --trigger aerospace_mode_change
 lalt - 0x2E : aerospace mode shortcuts; sketchybar --trigger aerospace_mode_change MODE=shortcuts
 
 # --- Join with (always available, no mode needed) ---
-lalt + shift + cmd - h : aerospace join-with left
-lalt + shift + cmd - j : aerospace join-with down
-lalt + shift + cmd - k : aerospace join-with up
-lalt + shift + cmd - l : aerospace join-with right
+lalt + shift + cmd - q : aerospace join-with left
+lalt + shift + cmd - s : aerospace join-with down
+lalt + shift + cmd - z : aerospace join-with up
+lalt + shift + cmd - d : aerospace join-with right
