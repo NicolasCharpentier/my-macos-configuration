@@ -34,7 +34,7 @@ config-version = 2
 # You can use it to add commands that run after AeroSpace startup.
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
-    'exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=6.0 style=round hidpi=on',
+    'exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=8.0 style=round hidpi=on',
     'exec-and-forget pgrep -x sketchybar || sketchybar',
     'exec-and-forget rm -f ~/.cache/workspace-summarizer/enabled ~/.cache/workspace-summarizer/cost.session ~/.cache/workspace-summarizer/tokens.session',
 ]
@@ -106,7 +106,7 @@ on-mode-changed = []
 #                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
     inner.horizontal = 10 #30
-    inner.vertical =   0 #30
+    inner.vertical =   10 #30
     outer.left =       10 #30
     outer.bottom =     10 #30
     outer.top =        [{ monitor."Built-in.*" = 5 }, 40] # SketchyBar height
