@@ -4,4 +4,4 @@ Esc: Exit
 G: Ghostty
 L: Lock
 M: Mic
-S: Sketchybar
+S: Sublime

@@ -13,12 +13,13 @@
 # │   F           : Toggle float/tiling                     │
 # │                 (astuce: float+unfloat Ghostty fix      │
 # │                  partiellement le bug des tabs)         │
+# │   S           : Restart sketchybar                      │
 # │   BACKSPACE   : Fermer toutes les fenetres sauf active  │
 # │                                                         │
 # │ Mode "shortcuts" - juste la touche (revient en main)    │
 # │   D           : Dodo (sleep)                            │
 # │   L           : Lock écran                              │
-# │   S           : Restart sketchybar                      │
+# │   S           : Sublime Text (new window)               │
 # │   M           : Toggle mute micro                       │
 # └─────────────────────────────────────────────────────────┘
 
@@ -123,6 +124,7 @@ on-mode-changed = []
     r = ['flatten-workspace-tree', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # reset layout
     f = ['layout floating tiling', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
+    s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
 
     # join-with bindings moved to skhd (lalt+shift+cmd+zqsd, always available)
 
@@ -134,7 +136,7 @@ on-mode-changed = []
     g = ['mode main', 'exec-and-forget ~/.local/bin/new-ghostty-window', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     d = ['mode main', 'exec-and-forget pmset sleepnow', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # dodo (sleep)
     l = ['mode main', 'exec-and-forget pmset displaysleepnow', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # lock écran
-    s = ['mode main', 'exec-and-forget killall sketchybar; sleep 1; sketchybar &'] # restart sketchybar
+    s = ['mode main', 'exec-and-forget ~/.local/bin/new-sublime-window', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
     # TOUCHE "M" pour toggle mute micro
     #   - (m AZERTY = semicolon QWERTY)
     semicolon = ['mode main', 'exec-and-forget SENDER=mouse.clicked NAME=mic ~/.config/sketchybar/plugins/mic.sh; sketchybar --trigger aerospace_mode_change MODE=main'] # toggle mic mute

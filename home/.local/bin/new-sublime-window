@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if pgrep -qi sublime_text; then
+  /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl --new-window < /dev/null
+else
+  open -a "Sublime Text"
+fi
