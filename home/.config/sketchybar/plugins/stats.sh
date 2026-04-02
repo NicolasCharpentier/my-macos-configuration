@@ -24,10 +24,11 @@ CACHE
 fi
 
 if [ "$SENDER" = "mouse.entered" ]; then
-    # Close all other popups first (workspace + stats)
+    # Close all other popups first (workspace + stats + ai naming)
     sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
                --set cpu.stats popup.drawing=off \
-               --set ram.stats popup.drawing=off 2>/dev/null
+               --set ram.stats popup.drawing=off \
+               --set ai.naming popup.drawing=off 2>/dev/null
 
     source /tmp/sketchybar_stats_cache 2>/dev/null
 

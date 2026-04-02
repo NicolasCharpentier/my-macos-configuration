@@ -33,11 +33,12 @@ config-version = 2
 after-startup-command = [
     'exec-and-forget borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=6.0 style=round hidpi=on',
     'exec-and-forget pgrep -x sketchybar || sketchybar',
+    'exec-and-forget rm -f ~/.cache/workspace-summarizer/enabled ~/.cache/workspace-summarizer/cost.session ~/.cache/workspace-summarizer/tokens.session',
 ]
 
 # Notify SketchyBar about workspace change
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; [ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger &'
 ]
 
 # Start AeroSpace at login
@@ -67,7 +68,7 @@ default-root-container-orientation = 'auto'
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 # NEW TEST : on va encore plus loin
-on-focus-changed = "move-mouse window-lazy-center"
+on-focus-changed = ['move-mouse window-lazy-center', 'exec-and-forget bash -c "[ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger"']
 
 # You can effectively turn off macOS "Hide application" (cmd-h) feature by toggling this flag
 # Useful if you don't use this macOS feature, but accidentally hit cmd-h or cmd-alt-h key
@@ -121,7 +122,7 @@ on-mode-changed = []
     f = ['layout floating tiling', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main'] # Toggle between floating and tiling layout
     backspace = ['close-all-windows-but-current', 'mode main', 'exec-and-forget sketchybar --trigger aerospace_mode_change MODE=main']
 
-    # join-with bindings moved to skhd (lalt+shift+cmd+hjkl, always available)
+    # join-with bindings moved to skhd (lalt+shift+cmd+zqsd, always available)
 
 # 'shortcuts' binding mode declaration.
 # Keep shortcuts in sync with ~/.config/sketchybar/shortcuts.txt
@@ -138,3 +139,7 @@ on-mode-changed = []
 [[on-window-detected]]
 if.app-name-regex-substring = "claude-jira-agent"
 run = "layout tiling"
+
+# Trigger workspace summarizer on any new window (if AI naming not disabled)
+[[on-window-detected]]
+run = 'exec-and-forget bash -c "[ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger"'

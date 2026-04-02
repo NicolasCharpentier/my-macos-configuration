@@ -43,6 +43,7 @@ sketchybar --default "${default[@]}"
 
 sketchybar --add event aerospace_workspace_change
 sketchybar --add event aerospace_mode_change
+sketchybar --add event ai_naming_changed
 
 # SERVICE mode label (hidden by default, shown when entering service mode)
 sketchybar --add item service.label left \
@@ -180,14 +181,6 @@ sketchybar --add item clock.time right \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
            --subscribe battery system_woke power_source_change \
-           --add item mic right \
-           --set mic \
-               icon="󰍬" \
-               icon.font="Hack Nerd Font:Bold:17.0" \
-               label.drawing=off \
-               update_freq=5 \
-               script="$PLUGIN_DIR/mic.sh" \
-           --subscribe mic mouse.clicked \
            --add item ram.stats right \
            --set ram.stats \
                icon.drawing=off \
@@ -207,7 +200,31 @@ sketchybar --add item clock.time right \
                popup.background.border_color=0xffffffff \
                popup.background.border_width=1 \
                script="$PLUGIN_DIR/stats.sh" \
-           --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global
+           --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global \
+           --add item mic right \
+           --set mic \
+               icon="󰍬" \
+               icon.font="Hack Nerd Font:Bold:17.0" \
+               label.drawing=off \
+               update_freq=5 \
+               script="$PLUGIN_DIR/mic.sh" \
+           --subscribe mic mouse.clicked
+
+# AI naming control panel (hidden when globally disabled)
+if [ ! -f "$HOME/.config/workspace-summarizer/disabled" ]; then
+    sketchybar --add item ai.naming right \
+               --set ai.naming \
+                   icon="󰯃" \
+                   icon.font="Hack Nerd Font:Bold:17.0" \
+                   icon.color=0xffffb3b3 \
+                   label.drawing=off \
+                   popup.background.color=0xe0202020 \
+                   popup.background.corner_radius=8 \
+                   popup.background.border_color=0xffffffff \
+                   popup.background.border_width=1 \
+                   script="$PLUGIN_DIR/ai_naming.sh" \
+               --subscribe ai.naming mouse.clicked ai_naming_changed
+fi
 
 ##### Auto-update on monitor change #####
 sketchybar --add item display_watcher right \

@@ -8,7 +8,8 @@ FOCUSED_WS="$FOCUSED_WORKSPACE"
 # Close all popups on workspace change
 sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
            --set cpu.stats popup.drawing=off \
-           --set ram.stats popup.drawing=off 2>/dev/null
+           --set ram.stats popup.drawing=off \
+           --set ai.naming popup.drawing=off 2>/dev/null
 
 FOCUSED_MON=$(aerospace list-workspaces --monitor all --visible \
     --format '%{workspace}|%{monitor-id}|%{workspace-is-focused}' 2>/dev/null \
@@ -40,13 +41,22 @@ while IFS='|' read -r ws mid; do
     [ -n "$ws" ] && WS_MON["$ws"]="$mid"
 done < <(aerospace list-workspaces --all --format '%{workspace}|%{monitor-id}')
 
-# Read workspace custom names
+# Read workspace custom names (manual)
 declare -A WS_NAMES
 NAMES_FILE="$HOME/.config/aerospace/workspace-names"
 if [ -f "$NAMES_FILE" ]; then
     while IFS='|' read -r ws wname; do
         [ -n "$ws" ] && WS_NAMES["$ws"]="$wname"
     done < "$NAMES_FILE"
+fi
+
+# Read AI-generated names (used when no manual override exists)
+declare -A AI_NAMES
+SUMMARIES_FILE="$HOME/.cache/workspace-summarizer/summaries.haiku"
+if [ -f "$SUMMARIES_FILE" ]; then
+    while IFS='|' read -r ws ainame; do
+        [ -n "$ws" ] && AI_NAMES["$ws"]="$ainame"
+    done < "$SUMMARIES_FILE"
 fi
 
 # Get visible workspace per monitor (for non-focused monitor styling)
@@ -102,8 +112,11 @@ for did in "${DISPLAY_IDS[@]}"; do
                     continue
                 fi
 
-                # Append description to icon field if set
+                # Resolve workspace name: manual > AI > none
                 WS_NAME="${WS_NAMES[$sid]}"
+                if [ -z "$WS_NAME" ] && [ -n "${AI_NAMES[$sid]}" ]; then
+                    WS_NAME="${AI_NAMES[$sid]}"
+                fi
                 if [ -n "$WS_NAME" ]; then
                     [ ${#WS_NAME} -gt 15 ] && WS_NAME="${WS_NAME:0:12}..."
                     WS_ICON="$sid $WS_NAME "
