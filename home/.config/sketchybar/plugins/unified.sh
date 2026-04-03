@@ -29,15 +29,19 @@ while IFS='|' read -r arr_id direct_id; do
 done < <(echo "$DISPLAYS_JSON" \
     | python3 -c "import json,sys; [print(f'{d[\"arrangement-id\"]}|{d[\"DirectDisplayID\"]}') for d in json.load(sys.stdin)]")
 
-# Build monitor -> arrangement-id and monitor -> name mappings
+# Build monitor -> arrangement-id by order
+# AeroSpace appkit-nsscreen-screens-id and SketchyBar DirectDisplayID use
+# different numbering. Match monitors to displays by enumeration order instead.
 declare -A MON_TO_ARR
 declare -A MON_NAME
 MONITOR_IDS=()
-while IFS='|' read -r mid appkit mname; do
+MON_IDX=0
+while IFS='|' read -r mid mname; do
     MONITOR_IDS+=("$mid")
-    MON_TO_ARR["$mid"]="${DIRECT_TO_ARR[$appkit]:-$appkit}"
     MON_NAME["$mid"]="$mname"
-done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-appkit-nsscreen-screens-id}|%{monitor-name}')
+    MON_TO_ARR["$mid"]="${DISPLAY_IDS[$MON_IDX]:-$((MON_IDX+1))}"
+    MON_IDX=$((MON_IDX + 1))
+done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}')
 
 # Build workspace -> monitor mapping
 declare -A WS_MON
@@ -87,76 +91,118 @@ for sid in 1 2 3 4 5 6 7 8 9; do
     WS_WIN_COUNT["$sid"]="$WIN_COUNT"
 done
 
-# Build one big sketchybar command for efficiency
+# ── Light theme colors ──
+# Raised tab (visible):  #f0ede8 — matches desktop wallpaper (seamless)
+# Lowered tab (other):   #e0dcd6 — slightly darker
+# Active text:           #3a3630 — dark warm
+# Inactive text:         #9a958d — muted
+# Gold badge:            #e1a860 — warm gold
+# Badge text:            #ffffff — white on gold
+# Remote monitor:        ~30% opacity (ghosted)
+
 CMD=()
 
 for did in "${DISPLAY_IDS[@]}"; do
     for mid in "${MONITOR_IDS[@]}"; do
         IS_LOCAL=false; [ "${MON_TO_ARR[$mid]}" = "$did" ] && IS_LOCAL=true
-        IS_FOCUSED_MON=false; [ "$mid" = "$FOCUSED_MON" ] && IS_FOCUSED_MON=true
 
-        # Monitor name: * suffix if local monitor
+        # Monitor label
         MLABEL="${MON_NAME[$mid]:0:5}"
-        if [ "$IS_LOCAL" = true ]; then
-            CMD+=(--set "unified.d$did.mon.$mid" background.drawing=off label="${MLABEL}*" label.color=0xffffffff)
-        else
-            CMD+=(--set "unified.d$did.mon.$mid" background.drawing=off label="$MLABEL" label.color=0xffffffff)
-        fi
+        CMD+=(--set "unified.d$did.mon.$mid" drawing=on label="$MLABEL" label.color=0xff9a958d)
 
         for sid in 1 2 3 4 5 6 7 8 9; do
-            ITEM="unified.d$did.ws.$mid.$sid"
+            BADGE="unified.d$did.ws.$mid.$sid.badge"
+            CONTENT="unified.d$did.ws.$mid.$sid"
+            TAB="unified.d$did.ws.$mid.$sid.tab"
 
-            if [ "${WS_MON[$sid]}" = "$mid" ]; then
-                WIN_COUNT="${WS_WIN_COUNT[$sid]}"
-                ICON_STRIP="${WS_ICONS[$sid]}"
-
-                # Hide empty non-focused workspaces
-                if [ "$WIN_COUNT" -eq 0 ] && [ "$sid" != "$FOCUSED_WS" ]; then
-                    CMD+=(--set "$ITEM" drawing=off)
-                    continue
-                fi
-
-                # Resolve workspace name: manual > AI > none
-                WS_NAME="${WS_NAMES[$sid]}"
-                if [ -z "$WS_NAME" ] && [ -n "${AI_NAMES[$sid]}" ]; then
-                    WS_NAME="${AI_NAMES[$sid]}"
-                fi
-                if [ -n "$WS_NAME" ]; then
-                    [ ${#WS_NAME} -gt 15 ] && WS_NAME="${WS_NAME:0:12}..."
-                    WS_ICON="$sid $WS_NAME "
-                else
-                    WS_ICON="$sid"
-                fi
-
-
-                if [ "$sid" = "$FOCUSED_WS" ]; then
-                    # Focused workspace: gold background
-                    CMD+=(--set "$ITEM" drawing=on
-                        background.drawing=on background.color=0xffe1a860 background.border_color=0xffe1a860
-                        icon="$WS_ICON" icon.color=0xff1e1e2e
-                        label="$ICON_STRIP" label.color=0xff1e1e2e)
-                elif [ "$sid" = "$PREV_WS" ]; then
-                    # Previous workspace (alt-tab destination): semi-transparent gold
-                    CMD+=(--set "$ITEM" drawing=on
-                        background.drawing=on background.color=0x99e1a860 background.border_color=0x99e1a860
-                        icon="$WS_ICON" icon.color=0xff1e1e2e
-                        label="$ICON_STRIP" label.color=0xff1e1e2e)
-                elif [ -n "${VISIBLE_WS[$sid]}" ]; then
-                    # Visible workspace on non-active monitor: white background
-                    CMD+=(--set "$ITEM" drawing=on
-                        background.drawing=on background.color=0xb0ffffff background.border_color=0xb0ffffff
-                        icon="$WS_ICON" icon.color=0xff1e1e2e
-                        label="$ICON_STRIP" label.color=0xff1e1e2e)
-                else
-                    # Other workspaces: transparent with white border
-                    CMD+=(--set "$ITEM" drawing=on
-                        background.drawing=on background.color=0x00000000 background.border_color=0xffffffff
-                        icon="$WS_ICON" icon.color=0xffffffff
-                        label="$ICON_STRIP" label.color=0xffffffff)
-                fi
-            else
-                CMD+=(--set "$ITEM" drawing=off)
+            if [ "${WS_MON[$sid]}" != "$mid" ]; then
+                CMD+=(--set "$BADGE" drawing=off)
+                CMD+=(--set "$CONTENT" drawing=off)
+                CMD+=(--set "$TAB" background.drawing=off)
+                continue
             fi
+
+            WIN_COUNT="${WS_WIN_COUNT[$sid]}"
+            ICON_STRIP="${WS_ICONS[$sid]}"
+
+            # Hide empty non-focused non-visible workspaces
+            if [ "$WIN_COUNT" -eq 0 ] && [ "$sid" != "$FOCUSED_WS" ] && [ -z "${VISIBLE_WS[$sid]}" ]; then
+                CMD+=(--set "$BADGE" drawing=off)
+                CMD+=(--set "$CONTENT" drawing=off)
+                CMD+=(--set "$TAB" background.drawing=off)
+                continue
+            fi
+
+            # Resolve workspace name: manual > AI > none
+            WS_NAME="${WS_NAMES[$sid]}"
+            if [ -z "$WS_NAME" ] && [ -n "${AI_NAMES[$sid]}" ]; then
+                WS_NAME="${AI_NAMES[$sid]}"
+            fi
+            if [ -n "$WS_NAME" ]; then
+                [ ${#WS_NAME} -gt 15 ] && WS_NAME="${WS_NAME:0:12}..."
+            fi
+
+            # ── LAYER 1: Tab shape ──
+            if [ "$sid" = "$FOCUSED_WS" ]; then
+                # Focused: tall, near-flush at top, extends below to hide bottom rounding
+                TAB_BG=0xfff8f7f5
+                TEXT_COLOR=0xff3a3630
+                TAB_HEIGHT=45
+                TAB_CORNER=11
+                TAB_Y_OFFSET=-5
+            elif [ -n "${VISIBLE_WS[$sid]}" ]; then
+                # Visible on other monitor: pill, text-centered
+                TAB_BG=0xffe8e5df
+                TEXT_COLOR=0xff3a3630
+                TAB_HEIGHT=27
+                TAB_CORNER=6
+                TAB_Y_OFFSET=-1
+            else
+                # Inactive: pill, text-centered
+                TAB_BG=0xffe8e5df
+                TEXT_COLOR=0xff8a857d
+                TAB_HEIGHT=27
+                TAB_CORNER=6
+                TAB_Y_OFFSET=-1
+            fi
+
+            # ── LAYER 2: Badge on number ──
+            if [ "$sid" = "$FOCUSED_WS" ]; then
+                BADGE_DRAWING=on
+                BADGE_COLOR=0xffe1a860
+                BADGE_TEXT=0xffffffff
+            elif [ "$sid" = "$PREV_WS" ]; then
+                BADGE_DRAWING=on
+                BADGE_COLOR=0x40e1a860
+                BADGE_TEXT=0x80e1a860
+            else
+                # Subtle muted badge for inactive tabs
+                BADGE_DRAWING=on
+                BADGE_COLOR=0xffd5d1cb
+                BADGE_TEXT=0xff8a857d
+            fi
+
+            # Badge item
+            CMD+=(--set "$BADGE" drawing=on
+                icon="$sid"
+                icon.color="$BADGE_TEXT"
+                icon.background.drawing="$BADGE_DRAWING"
+                icon.background.color="$BADGE_COLOR")
+
+            # Content item
+            CMD+=(--set "$CONTENT" drawing=on
+                icon="$WS_NAME"
+                icon.color="$TEXT_COLOR"
+                label="$ICON_STRIP"
+                label.color="$TEXT_COLOR")
+
+            # Bracket tab background
+            CMD+=(--set "$TAB"
+                background.drawing=on
+                background.color="$TAB_BG"
+                background.height="$TAB_HEIGHT"
+                background.corner_radius="$TAB_CORNER"
+                background.y_offset="$TAB_Y_OFFSET")
         done
     done
 done

@@ -26,10 +26,10 @@ if [ "$SENDER" = "mouse.entered" ]; then
             --set "$ITEM" \
                 icon="$icon_result" \
                 icon.font="sketchybar-app-font:Regular:14.0" \
-                icon.color=0xffffffff \
+                icon.color=0xff3a3630 \
                 label="$app — $title" \
                 label.font="Hack Nerd Font:Regular:12.0" \
-                label.color=0xffffffff
+                label.color=0xff3a3630
         IDX=$((IDX + 1))
     done <<< "$WINDOWS"
 

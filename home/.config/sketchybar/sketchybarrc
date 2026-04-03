@@ -1,39 +1,25 @@
 #!/usr/bin/env bash
 
-# This is a demo config to showcase some of the most important commands.
-# It is meant to be changed and configured, as it is intentionally kept sparse.
-# For a (much) more advanced configuration example see FelixKratz's dotfiles:
-# https://github.com/FelixKratz/dotfiles
-
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
 ##### Bar Appearance #####
-# Configuring the general appearance of the bar.
-# These are only some of the options available. For all options see:
-# https://felixkratz.github.io/SketchyBar/config/bar
-# If you are looking for other colors, see the color picker:
-# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
-
 sketchybar --bar position=top \
                  height=37 \
-                 blur_radius=30 \
-                 color=0x00000000 \
+                 blur_radius=0 \
+                 color=0xffd5d1cb \
+                 shadow=off \
                  sticky=off \
-                 padding_left=10 \
-                 padding_right=10
+                 padding_left=15 \
+                 padding_right=15
 
 ##### Changing Defaults #####
-# We now change some default values, which are applied to all further items.
-# For a full list of all available item properties see:
-# https://felixkratz.github.io/SketchyBar/config/items
-
 default=(
   padding_left=5
   padding_right=5
   icon.font="Hack Nerd Font:Bold:17.0"
   label.font="Hack Nerd Font:Bold:14.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
+  icon.color=0xff3a3630
+  label.color=0xff3a3630
   icon.padding_left=4
   icon.padding_right=4
   label.padding_left=4
@@ -56,7 +42,7 @@ sketchybar --add item service.label left \
         icon.drawing=off \
         label="SERVICE" \
         label.font="Hack Nerd Font:Bold:14.0" \
-        label.color=0xff1e1e2e \
+        label.color=0xffffffff \
         label.padding_left=10 \
         label.padding_right=10
 
@@ -75,77 +61,101 @@ MONITOR_IDS=($(aerospace list-monitors --format '%{monitor-id}'))
 DISPLAY_IDS=($(sketchybar --query displays 2>/dev/null \
     | python3 -c "import json,sys; [print(d['arrangement-id']) for d in json.load(sys.stdin)]"))
 
-# Per-display item sets: each display gets its own copy so monitor name
-# styling can differ (gold=focused+local, white=local, plain=remote)
+UFIRST_DISPLAY=()
 for did in "${DISPLAY_IDS[@]}"; do
     UFIRST=true
     for mid in "${MONITOR_IDS[@]}"; do
         MNAME=$(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}' \
             | grep "^${mid}|" | cut -d'|' -f2)
 
-        # Separator between monitor blocks (not before the first)
+        # Spacer between monitor groups (not before first)
         if [ "$UFIRST" = true ]; then
             UFIRST=false
         else
-            sketchybar --add item unified.d$did.sep.$mid left \
-                --set unified.d$did.sep.$mid \
+            sketchybar --add item unified.d$did.gap.$mid left \
+                --set unified.d$did.gap.$mid \
                     display=$did \
-                    icon="|" \
-                    icon.font="Hack Nerd Font:Bold:18.0" \
-                    icon.color=0xb0ffffff \
-                    icon.padding_left=4 \
-                    icon.padding_right=4 \
+                    icon.drawing=off \
                     label.drawing=off \
-                    padding_left=0 \
+                    background.drawing=off \
+                    padding_left=8 \
                     padding_right=0 \
-                    background.drawing=off
+                    width=6
         fi
 
-        # Monitor name label
+        # Monitor name label (before workspace slots)
         sketchybar --add item unified.d$did.mon.$mid left \
             --set unified.d$did.mon.$mid \
                 display=$did \
-                background.corner_radius=5 \
-                background.height=25 \
                 background.drawing=off \
                 icon.drawing=off \
                 label="${MNAME:0:5}" \
-                label.font="Hack Nerd Font:Bold:14.0" \
-                label.padding_left=8 \
-                label.padding_right=8 \
+                label.font="Hack Nerd Font:Bold:11.0" \
+                label.color=0xff9a958d \
+                label.padding_left=6 \
+                label.padding_right=6 \
                 padding_left=0 \
                 padding_right=0
 
-        # Workspace slots (1-9) for this monitor on this display, initially hidden
+        # Workspace slots (1-9): badge + content items + bracket
         for sid in 1 2 3 4 5 6 7 8 9; do
+            # Badge item: just the workspace number (carries the gold badge)
+            sketchybar --add item unified.d$did.ws.$mid.$sid.badge left \
+                --set unified.d$did.ws.$mid.$sid.badge \
+                    display=$did \
+                    drawing=off \
+                    background.drawing=off \
+                    icon="$sid" \
+                    icon.font="Hack Nerd Font:Regular:12.0" \
+                    icon.color=0xff9a958d \
+                    icon.padding_left=8 \
+                    icon.padding_right=6 \
+                    icon.background.drawing=off \
+                    icon.background.color=0xffe1a860 \
+                    icon.background.height=20 \
+                    icon.background.corner_radius=6 \
+                    label.drawing=off \
+                    padding_left=4 \
+                    padding_right=0
+
+            # Content item: workspace name + app icons
             sketchybar --add item unified.d$did.ws.$mid.$sid left \
                 --subscribe unified.d$did.ws.$mid.$sid mouse.entered mouse.exited mouse.exited.global \
                 --set unified.d$did.ws.$mid.$sid \
                     display=$did \
-                    background.color=0xffe1a860 \
-                    background.corner_radius=5 \
-                    background.height=25 \
+                    drawing=off \
                     background.drawing=off \
-                    background.border_color=0xffffffff \
-                    background.border_width=1 \
-                    icon="$sid" \
-                    icon.font="Hack Nerd Font:Bold:14.0" \
-                    icon.padding_left=7 \
-                    icon.padding_right=2 \
+                    icon="" \
+                    icon.font="Hack Nerd Font:Bold:13.0" \
+                    icon.color=0xff9a958d \
+                    icon.padding_left=2 \
+                    icon.padding_right=4 \
                     label.drawing=on \
                     label.font="sketchybar-app-font:Regular:14.0" \
+                    label.color=0xff9a958d \
                     label.padding_left=2 \
-                    label.padding_right=7 \
-                    padding_left=2 \
-                    padding_right=2 \
-                    drawing=off \
-                    popup.background.color=0xe0202020 \
+                    label.padding_right=6 \
+                    padding_left=0 \
+                    padding_right=4 \
+                    popup.background.color=0xf0f5f2ef \
                     popup.background.corner_radius=8 \
-                    popup.background.border_color=0xffffffff \
+                    popup.background.border_color=0xffd0ccc6 \
                     popup.background.border_width=1 \
                     click_script="$PLUGIN_DIR/rename_workspace.sh $sid" \
                     script="$PLUGIN_DIR/unified_popup.sh $sid"
 
+            # Bracket: unified tab background behind badge + content
+            sketchybar --add bracket unified.d$did.ws.$mid.$sid.tab \
+                    unified.d$did.ws.$mid.$sid.badge \
+                    unified.d$did.ws.$mid.$sid \
+                --set unified.d$did.ws.$mid.$sid.tab \
+                    background.drawing=off \
+                    background.color=0xffe0dcd6 \
+                    background.corner_radius=6 \
+                    background.height=28 \
+                    background.border_width=0 \
+                    background.padding_left=7 \
+                    background.padding_right=7
         done
     done
 done
@@ -169,14 +179,14 @@ sketchybar --add item clock.time right \
                update_freq=1 \
                icon.drawing=off \
                label.font="Hack Nerd Font:Bold:14.0" \
-               label.color=0xffffffff \
+               label.color=0xff3a3630 \
                script="$PLUGIN_DIR/clock.sh" \
            --add item clock.date right \
            --set clock.date \
                update_freq=60 \
                icon.drawing=off \
                label.font="Hack Nerd Font:Bold:14.0" \
-               label.color=0xffffffff \
+               label.color=0xff3a3630 \
                script="$PLUGIN_DIR/date.sh" \
            --add item battery right \
            --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
@@ -185,9 +195,9 @@ sketchybar --add item clock.time right \
            --set ram.stats \
                icon.drawing=off \
                label="RAM …" \
-               popup.background.color=0xe0202020 \
+               popup.background.color=0xf0f5f2ef \
                popup.background.corner_radius=8 \
-               popup.background.border_color=0xffffffff \
+               popup.background.border_color=0xffd0ccc6 \
                popup.background.border_width=1 \
                script="$PLUGIN_DIR/stats.sh" \
            --subscribe ram.stats mouse.entered mouse.exited mouse.exited.global \
@@ -195,9 +205,9 @@ sketchybar --add item clock.time right \
            --set cpu.stats \
                icon.drawing=off \
                label="CPU …" \
-               popup.background.color=0xe0202020 \
+               popup.background.color=0xf0f5f2ef \
                popup.background.corner_radius=8 \
-               popup.background.border_color=0xffffffff \
+               popup.background.border_color=0xffd0ccc6 \
                popup.background.border_width=1 \
                script="$PLUGIN_DIR/stats.sh" \
            --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global \
@@ -216,11 +226,11 @@ if [ ! -f "$HOME/.config/workspace-summarizer/disabled" ]; then
                --set ai.naming \
                    icon="󰯃" \
                    icon.font="Hack Nerd Font:Bold:17.0" \
-                   icon.color=0xffffb3b3 \
+                   icon.color=0xffe1a860 \
                    label.drawing=off \
-                   popup.background.color=0xe0202020 \
+                   popup.background.color=0xf0f5f2ef \
                    popup.background.corner_radius=8 \
-                   popup.background.border_color=0xffffffff \
+                   popup.background.border_color=0xffd0ccc6 \
                    popup.background.border_width=1 \
                    script="$PLUGIN_DIR/ai_naming.sh" \
                --subscribe ai.naming mouse.clicked ai_naming_changed
@@ -232,6 +242,9 @@ sketchybar --add item display_watcher right \
                drawing=off \
                script="$PLUGIN_DIR/display_change.sh" \
            --subscribe display_watcher display_change system_woke
+
+# Set solid wallpaper for visual continuity with raised tabs
+"$PLUGIN_DIR/set_wallpaper.sh" &
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update

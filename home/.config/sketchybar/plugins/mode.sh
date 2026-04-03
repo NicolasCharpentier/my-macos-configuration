@@ -23,7 +23,7 @@ create_bubbles() {
             background.height=25
             icon="$key"
             icon.font="Hack Nerd Font:Bold:14.0"
-            icon.color=0xff1e1e2e
+            icon.color=0xffffffff
             icon.background.drawing=on
             icon.background.color=0xffe1a860
             icon.background.height=25
@@ -32,7 +32,7 @@ create_bubbles() {
             icon.padding_right=7
             label=" $label"
             label.font="Hack Nerd Font:Regular:14.0"
-            label.color=0xffffffff
+            label.color=0xff3a3630
             label.padding_left=0
             label.padding_right=20
         )
@@ -57,8 +57,7 @@ elif [ "$MODE" = "shortcuts" ]; then
 else
     sketchybar --remove '/shortcut\./' 2>/dev/null
     sketchybar --set service.label drawing=off \
-               --set '/unified\.d.*\.mon\./' drawing=on \
-               --set '/unified\.d.*\.sep\./' drawing=on
+               --set '/unified\.d.*\.mon\./' drawing=on
     # Let unified.sh restore workspace items
     FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null)
     sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE="$FOCUSED"
