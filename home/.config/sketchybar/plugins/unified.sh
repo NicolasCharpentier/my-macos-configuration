@@ -144,26 +144,29 @@ for did in "${DISPLAY_IDS[@]}"; do
 
             # ── LAYER 1: Tab shape ──
             if [ "$sid" = "$FOCUSED_WS" ]; then
-                # Focused: tall, near-flush at top, extends below to hide bottom rounding
+                # Focused: tall, extends below bar to hide bottom rounding
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
                 TAB_HEIGHT=45
-                TAB_CORNER=11
-                TAB_Y_OFFSET=-5
+                TAB_CORNER=9
+                TAB_Y_OFFSET=-4
+                TEXT_Y=0
             elif [ -n "${VISIBLE_WS[$sid]}" ]; then
-                # Visible on other monitor: pill, text-centered
-                TAB_BG=0xffe8e5df
+                # Visible on other monitor: shorter floating pill
+                TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=27
-                TAB_CORNER=6
-                TAB_Y_OFFSET=-1
+                TAB_HEIGHT=34
+                TAB_CORNER=8
+                TAB_Y_OFFSET=-4
+                TEXT_Y=-3
             else
-                # Inactive: pill, text-centered
-                TAB_BG=0xffe8e5df
+                # Inactive: shorter floating pill
+                TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff8a857d
-                TAB_HEIGHT=27
-                TAB_CORNER=6
-                TAB_Y_OFFSET=-1
+                TAB_HEIGHT=34
+                TAB_CORNER=8
+                TAB_Y_OFFSET=-4
+                TEXT_Y=-3
             fi
 
             # ── LAYER 2: Badge on number ──
@@ -186,6 +189,7 @@ for did in "${DISPLAY_IDS[@]}"; do
             CMD+=(--set "$BADGE" drawing=on
                 icon="$sid"
                 icon.color="$BADGE_TEXT"
+                icon.y_offset="$TEXT_Y"
                 icon.background.drawing="$BADGE_DRAWING"
                 icon.background.color="$BADGE_COLOR")
 
@@ -193,8 +197,10 @@ for did in "${DISPLAY_IDS[@]}"; do
             CMD+=(--set "$CONTENT" drawing=on
                 icon="$WS_NAME"
                 icon.color="$TEXT_COLOR"
+                icon.y_offset="$TEXT_Y"
                 label="$ICON_STRIP"
-                label.color="$TEXT_COLOR")
+                label.color="$TEXT_COLOR"
+                label.y_offset="$TEXT_Y")
 
             # Bracket tab background
             CMD+=(--set "$TAB"
