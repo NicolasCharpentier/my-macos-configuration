@@ -26,5 +26,11 @@ with open(sys.argv[2], 'wb') as f:
     f.write(sig + chunk(b'IHDR', ihdr) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b''))
 " "$COLOR" "$STAMPED"
 
-osascript -e "tell application \"Finder\" to set desktop picture to POSIX file \"$STAMPED\"" 2>/dev/null
+swift -e '
+import AppKit
+let url = URL(fileURLWithPath: CommandLine.arguments[1])
+for screen in NSScreen.screens {
+    try? NSWorkspace.shared.setDesktopImageURL(url, for: screen, options: [:])
+}
+' "$STAMPED" 2>/dev/null
 sleep 2

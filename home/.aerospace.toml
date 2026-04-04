@@ -109,7 +109,7 @@ on-mode-changed = []
     inner.vertical =   20
     outer.left =       20
     outer.bottom =     20
-    outer.top =        [{ monitor."Built-in.*" = 5 }, 50] # SketchyBar height + gap for tab continuity
+    outer.top =        [{ monitor."Built-in.*" = 15 }, 60] # SketchyBar height + gap for tab continuity
     outer.right =      20
 
 # 'main' binding mode declaration

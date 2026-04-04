@@ -152,43 +152,43 @@ for did in "${DISPLAY_IDS[@]}"; do
                 # Focused: tall, extends below bar to hide bottom rounding
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=45
-                TAB_CORNER=9
-                TAB_Y_OFFSET=-4
-                TEXT_Y=0
+                TAB_HEIGHT=52
+                TAB_CORNER=8
+                TAB_Y_OFFSET=-8
+                TEXT_Y=-4
             elif [ -n "${VISIBLE_WS[$sid]}" ]; then
                 # Visible on other monitor: short pill + bottom mask
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=34
+                TAB_HEIGHT=40
                 TAB_CORNER=8
-                TAB_Y_OFFSET=-4
-                TEXT_Y=-3
+                TAB_Y_OFFSET=-8
+                TEXT_Y=-6
                 MASK_DRAWING=on
             else
                 # Inactive: short pill + bottom mask
-                TAB_BG=0xfff8f7f5
+                TAB_BG=0xffebe9e4
                 TEXT_COLOR=0xff8a857d
-                TAB_HEIGHT=34
+                TAB_HEIGHT=40
                 TAB_CORNER=8
-                TAB_Y_OFFSET=-4
-                TEXT_Y=-3
+                TAB_Y_OFFSET=-8
+                TEXT_Y=-6
                 MASK_DRAWING=on
             fi
 
             # ── LAYER 2: Badge on number ──
             if [ "$sid" = "$FOCUSED_WS" ]; then
                 BADGE_DRAWING=on
-                BADGE_COLOR=0xffe1a860
-                BADGE_TEXT=0xffffffff
+                BADGE_COLOR=0xffedc07a
+                BADGE_TEXT=0xff3a3630
             elif [ "$sid" = "$PREV_WS" ]; then
                 BADGE_DRAWING=on
-                BADGE_COLOR=0x40e1a860
-                BADGE_TEXT=0x80e1a860
+                BADGE_COLOR=0x60e1a860
+                BADGE_TEXT=0xff8a857d
             else
-                # Subtle muted badge for inactive tabs
+                # Badge blends into tab background
                 BADGE_DRAWING=on
-                BADGE_COLOR=0xffd5d1cb
+                BADGE_COLOR="$TAB_BG"
                 BADGE_TEXT=0xff8a857d
             fi
 
@@ -199,13 +199,14 @@ for did in "${DISPLAY_IDS[@]}"; do
                 icon.y_offset="$TEXT_Y"
                 icon.background.drawing="$BADGE_DRAWING"
                 icon.background.color="$BADGE_COLOR"
+                icon.background.y_offset="$TEXT_Y"
                 background.drawing="$MASK_DRAWING"
                 background.color="$TAB_BG"
                 background.corner_radius=0
                 background.height=18
                 background.y_offset=-8
-                background.padding_left=0
-                background.padding_right=0)
+                background.padding_left=8
+                background.padding_right=4)
 
             # Content item (with flat bottom mask via item background)
             CMD+=(--set "$CONTENT" drawing=on
@@ -221,7 +222,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.height=18
                 background.y_offset=-8
                 background.padding_left=0
-                background.padding_right=0)
+                background.padding_right=8)
 
             # Bracket tab background
             CMD+=(--set "$TAB"
