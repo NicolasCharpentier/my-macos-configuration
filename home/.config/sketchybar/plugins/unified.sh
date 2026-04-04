@@ -147,33 +147,46 @@ for did in "${DISPLAY_IDS[@]}"; do
             fi
 
             # ── LAYER 1: Tab shape ──
-            MASK_DRAWING=off
+            # Step 1: colors and sizing by state
             if [ "$sid" = "$FOCUSED_WS" ]; then
-                # Focused: tall, extends below bar to hide bottom rounding
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
                 TAB_HEIGHT=52
                 TAB_CORNER=8
-                TAB_Y_OFFSET=-8
-                TEXT_Y=-4
+                MASK_DRAWING=off
             elif [ -n "${VISIBLE_WS[$sid]}" ]; then
-                # Visible on other monitor: short pill + bottom mask
+                # Visible workspace on a monitor: tall like focused
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=40
+                TAB_HEIGHT=52
                 TAB_CORNER=8
-                TAB_Y_OFFSET=-8
-                TEXT_Y=-6
-                MASK_DRAWING=on
+                MASK_DRAWING=off
             else
-                # Inactive: short pill + bottom mask
                 TAB_BG=0xffebe9e4
                 TEXT_COLOR=0xff8a857d
                 TAB_HEIGHT=40
                 TAB_CORNER=8
-                TAB_Y_OFFSET=-8
-                TEXT_Y=-6
                 MASK_DRAWING=on
+            fi
+
+            # Step 2: direction by display locality
+            # Local monitor: tabs grow downward
+            if [ "$IS_LOCAL" = true ]; then
+                TAB_Y_OFFSET=-8
+                # Tall tabs (focused/visible) have text closer to center
+                if [ "$sid" = "$FOCUSED_WS" ] || [ -n "${VISIBLE_WS[$sid]}" ]; then
+                    TEXT_Y=-4
+                else
+                    TEXT_Y=-6
+                fi
+            # Remote monitor: tabs grow upward (flipped)
+            else
+                TAB_Y_OFFSET=8
+                if [ "$sid" = "$FOCUSED_WS" ] || [ -n "${VISIBLE_WS[$sid]}" ]; then
+                    TEXT_Y=4
+                else
+                    TEXT_Y=6
+                fi
             fi
 
             # ── LAYER 2: Badge on number ──
@@ -192,7 +205,14 @@ for did in "${DISPLAY_IDS[@]}"; do
                 BADGE_TEXT=0xff8a857d
             fi
 
-            # Badge item (with flat bottom mask via item background)
+            # Mask offset: covers bottom corners normally, top corners when flipped
+            if [ "$TAB_Y_OFFSET" -gt 0 ] 2>/dev/null; then
+                MASK_Y=8
+            else
+                MASK_Y=-8
+            fi
+
+            # Badge item (with flat mask via item background)
             CMD+=(--set "$BADGE" drawing=on
                 icon="$sid"
                 icon.color="$BADGE_TEXT"
@@ -204,11 +224,11 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.color="$TAB_BG"
                 background.corner_radius=0
                 background.height=18
-                background.y_offset=-8
+                background.y_offset="$MASK_Y"
                 background.padding_left=8
                 background.padding_right=4)
 
-            # Content item (with flat bottom mask via item background)
+            # Content item (with flat mask via item background)
             CMD+=(--set "$CONTENT" drawing=on
                 icon="$WS_NAME"
                 icon.color="$TEXT_COLOR"
@@ -220,7 +240,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.color="$TAB_BG"
                 background.corner_radius=0
                 background.height=18
-                background.y_offset=-8
+                background.y_offset="$MASK_Y"
                 background.padding_left=0
                 background.padding_right=8)
 

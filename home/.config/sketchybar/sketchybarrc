@@ -97,7 +97,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                 padding_left=0 \
                 padding_right=0
 
-        # Workspace slots (1-9): badge + content items + bracket
+        # Workspace slots (1-9): badge + content items + bracket 
         for sid in 1 2 3 4 5 6 7 8 9; do
             # Badge item: just the workspace number (carries the gold badge)
             sketchybar --add item unified.d$did.ws.$mid.$sid.badge left \
