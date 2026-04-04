@@ -115,10 +115,13 @@ for did in "${DISPLAY_IDS[@]}"; do
             CONTENT="unified.d$did.ws.$mid.$sid"
             TAB="unified.d$did.ws.$mid.$sid.tab"
 
+            SPACER="unified.d$did.ws.$mid.$sid.spacer"
+
             if [ "${WS_MON[$sid]}" != "$mid" ]; then
                 CMD+=(--set "$BADGE" drawing=off)
                 CMD+=(--set "$CONTENT" drawing=off)
                 CMD+=(--set "$TAB" background.drawing=off)
+                CMD+=(--set "$SPACER" drawing=off)
                 continue
             fi
 
@@ -130,6 +133,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                 CMD+=(--set "$BADGE" drawing=off)
                 CMD+=(--set "$CONTENT" drawing=off)
                 CMD+=(--set "$TAB" background.drawing=off)
+                CMD+=(--set "$SPACER" drawing=off)
                 continue
             fi
 
@@ -209,6 +213,9 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.height="$TAB_HEIGHT"
                 background.corner_radius="$TAB_CORNER"
                 background.y_offset="$TAB_Y_OFFSET")
+
+            # Show gap spacer
+            CMD+=(--set "$SPACER" drawing=on)
         done
     done
 done

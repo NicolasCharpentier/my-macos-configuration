@@ -115,7 +115,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                     icon.background.height=20 \
                     icon.background.corner_radius=6 \
                     label.drawing=off \
-                    padding_left=4 \
+                    padding_left=8 \
                     padding_right=0
 
             # Content item: workspace name + app icons
@@ -136,7 +136,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                     label.padding_left=2 \
                     label.padding_right=4 \
                     padding_left=0 \
-                    padding_right=4 \
+                    padding_right=8 \
                     popup.background.color=0xf0f5f2ef \
                     popup.background.corner_radius=8 \
                     popup.background.border_color=0xffd0ccc6 \
@@ -156,6 +156,18 @@ for did in "${DISPLAY_IDS[@]}"; do
                     background.border_width=0 \
                     background.padding_left=3 \
                     background.padding_right=3
+
+            # Gap spacer after tab (not part of any bracket)
+            sketchybar --add item unified.d$did.ws.$mid.$sid.spacer left \
+                --set unified.d$did.ws.$mid.$sid.spacer \
+                    display=$did \
+                    drawing=off \
+                    icon.drawing=off \
+                    label.drawing=off \
+                    background.drawing=off \
+                    padding_left=0 \
+                    padding_right=0 \
+                    width=4
         done
     done
 done
