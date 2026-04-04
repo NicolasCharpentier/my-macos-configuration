@@ -202,8 +202,8 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.drawing="$MASK_DRAWING"
                 background.color="$TAB_BG"
                 background.corner_radius=0
-                background.height=10
-                background.y_offset=-10
+                background.height=18
+                background.y_offset=-8
                 background.padding_left=0
                 background.padding_right=0)
 
@@ -218,8 +218,8 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.drawing="$MASK_DRAWING"
                 background.color="$TAB_BG"
                 background.corner_radius=0
-                background.height=10
-                background.y_offset=-10
+                background.height=18
+                background.y_offset=-8
                 background.padding_left=0
                 background.padding_right=0)
 
