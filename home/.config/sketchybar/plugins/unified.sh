@@ -262,6 +262,7 @@ for did in "${DISPLAY_IDS[@]}"; do
 
             # Bracket tab background
             CMD+=(--set "$TAB"
+                drawing=on
                 background.drawing=on
                 background.color="$TAB_BG"
                 background.height="$TAB_HEIGHT"

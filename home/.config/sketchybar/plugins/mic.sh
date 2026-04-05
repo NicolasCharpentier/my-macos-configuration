@@ -33,10 +33,10 @@ CURRENT=$(osascript -e "input volume of (get volume settings)")
 
 if [ "$CURRENT" -eq 0 ]; then
   ICON="󰍭"
-  COLOR="0xffffb3b3"
+  COLOR="0xff994444"
 else
   ICON="󰍬"
-  COLOR="0xffffffff"
+  COLOR="0xff7a756d"
 fi
 
 sketchybar --set "$NAME" icon="$ICON" icon.color="$COLOR"
