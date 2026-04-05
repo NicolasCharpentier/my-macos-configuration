@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Add a command that opens up a new workspace at available number
+
 PLUGIN_DIR="$CONFIG_DIR/plugins"
 
 ##### Bar Appearance #####

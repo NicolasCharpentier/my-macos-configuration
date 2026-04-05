@@ -84,7 +84,7 @@ for sid in 1 2 3 4 5 6 7 8 9; do
         while IFS= read -r app; do
             [ -z "$app" ] && continue
             __icon_map "$app"
-            ICON_STRIP+=" $icon_result"
+            ICON_STRIP+="$icon_result"
         done <<< "$WINDOWS"
     fi
     WS_ICONS["$sid"]="${ICON_STRIP# }"
@@ -108,7 +108,14 @@ for did in "${DISPLAY_IDS[@]}"; do
 
         # Monitor label
         MLABEL="${MON_NAME[$mid]:0:5}"
-        CMD+=(--set "unified.d$did.mon.$mid" drawing=on label="$MLABEL" label.color=0xff9a958d)
+        if [ "$IS_LOCAL" = true ]; then
+            MON_LABEL_COLOR=0xff3a3630
+            MON_LABEL_Y=-4
+        else
+            MON_LABEL_COLOR=0xff9a958d
+            MON_LABEL_Y=4
+        fi
+        CMD+=(--set "unified.d$did.mon.$mid" drawing=on label="$MLABEL" label.color="$MON_LABEL_COLOR" label.y_offset="$MON_LABEL_Y")
 
         for sid in 1 2 3 4 5 6 7 8 9; do
             BADGE="unified.d$did.ws.$mid.$sid.badge"
@@ -137,7 +144,7 @@ for did in "${DISPLAY_IDS[@]}"; do
                 continue
             fi
 
-            # Resolve workspace name: manual > AI > none
+            # Resolve workspace name: manual > AI > none 
             WS_NAME="${WS_NAMES[$sid]}"
             if [ -z "$WS_NAME" ] && [ -n "${AI_NAMES[$sid]}" ]; then
                 WS_NAME="${AI_NAMES[$sid]}"
@@ -147,18 +154,18 @@ for did in "${DISPLAY_IDS[@]}"; do
             fi
 
             # ── LAYER 1: Tab shape ──
-            # Step 1: colors and sizing by state
+            # Step 1: colors and sizing by state 
             if [ "$sid" = "$FOCUSED_WS" ]; then
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=52
+                TAB_HEIGHT=46
                 TAB_CORNER=8
                 MASK_DRAWING=off
             elif [ -n "${VISIBLE_WS[$sid]}" ]; then
-                # Visible workspace on a monitor: tall like focused
+                # Visible workspace on a monitor: tall like focused 
                 TAB_BG=0xfff8f7f5
                 TEXT_COLOR=0xff3a3630
-                TAB_HEIGHT=52
+                TAB_HEIGHT=46
                 TAB_CORNER=8
                 MASK_DRAWING=off
             else
@@ -228,11 +235,20 @@ for did in "${DISPLAY_IDS[@]}"; do
                 background.padding_left=8
                 background.padding_right=4)
 
+            # Collapse icon padding when there's no workspace name
+            if [ -n "$WS_NAME" ]; then
+                ICON_PAD_L=2 ICON_PAD_R=4
+            else
+                ICON_PAD_L=0 ICON_PAD_R=0
+            fi
+
             # Content item (with flat mask via item background)
             CMD+=(--set "$CONTENT" drawing=on
                 icon="$WS_NAME"
                 icon.color="$TEXT_COLOR"
                 icon.y_offset="$TEXT_Y"
+                icon.padding_left="$ICON_PAD_L"
+                icon.padding_right="$ICON_PAD_R"
                 label="$ICON_STRIP"
                 label.color="$TEXT_COLOR"
                 label.y_offset="$TEXT_Y"

@@ -17,4 +17,4 @@
 #   chafa -f kitty --scale max --clear /tmp/topbar_current.png
 #   fswatch -o /tmp/topbar_current.png | while read; do chafa -f kitty --scale max --clear /tmp/topbar_current.png; done
 
-sketchybar --reload && sleep 5 && mv -f /tmp/topbar_p1.png /tmp/topbar_p2.png 2>/dev/null; mv -f /tmp/topbar_current.png /tmp/topbar_p1.png 2>/dev/null; screencapture -x -R 0,0,550,50 /tmp/topbar_current.png 2>&1
+sketchybar --reload && sleep 5 && mv -f /tmp/topbar_p1.png /tmp/topbar_p2.png 2>/dev/null; mv -f /tmp/topbar_current.png /tmp/topbar_p1.png 2>/dev/null; screencapture -x -R 0,0,900,60 /tmp/topbar_current.png 2>&1
