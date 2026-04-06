@@ -209,6 +209,8 @@ sketchybar --add item clock.time right \
            --set ram.stats \
                icon.drawing=off \
                label="RAM …" \
+               popup.align=right \
+               popup.height=25 \
                popup.background.color=0xf0f5f2ef \
                popup.background.corner_radius=8 \
                popup.background.border_color=0xffd0ccc6 \
@@ -219,6 +221,8 @@ sketchybar --add item clock.time right \
            --set cpu.stats \
                icon.drawing=off \
                label="CPU …" \
+               popup.align=right \
+               popup.height=25 \
                popup.background.color=0xf0f5f2ef \
                popup.background.corner_radius=8 \
                popup.background.border_color=0xffd0ccc6 \

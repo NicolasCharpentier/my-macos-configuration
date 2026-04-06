@@ -33,35 +33,6 @@ if [ "$SENDER" = "mouse.entered" ]; then
         IDX=$((IDX + 1))
     done <<< "$WINDOWS"
 
-    # --- AI Summary ---
-    SUMMARIES_HAIKU="$HOME/.cache/workspace-summarizer/summaries.haiku"
-    AI_HAIKU=""
-    [ -f "$SUMMARIES_HAIKU" ] && AI_HAIKU=$(grep "^${SID}|" "$SUMMARIES_HAIKU" 2>/dev/null | head -1 | cut -d'|' -f2-)
-
-    if [ -n "$AI_HAIKU" ]; then
-        ITEM="$NAME.win.$IDX"
-        sketchybar --add item "$ITEM" popup."$NAME" \
-            --set "$ITEM" \
-                icon="─" \
-                icon.font="Hack Nerd Font:Regular:8.0" \
-                icon.color=0xff555555 \
-                label="─────────────" \
-                label.font="Hack Nerd Font:Regular:8.0" \
-                label.color=0xff555555
-        IDX=$((IDX + 1))
-
-        ITEM="$NAME.win.$IDX"
-        sketchybar --add item "$ITEM" popup."$NAME" \
-            --set "$ITEM" \
-                icon="H" \
-                icon.font="Hack Nerd Font:Bold:12.0" \
-                icon.color=0xffe1a860 \
-                label="$AI_HAIKU" \
-                label.font="Hack Nerd Font:Bold:12.0" \
-                label.color=0xffe1a860
-        IDX=$((IDX + 1))
-    fi
-
     sketchybar --set "$NAME" popup.drawing=on
 
     # Auto-hide popup after 5 seconds
