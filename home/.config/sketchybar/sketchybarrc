@@ -190,7 +190,7 @@ sketchybar --add event system_stats
 ##### Right Items #####
 sketchybar --add item clock.time right \
            --set clock.time \
-               update_freq=1 \
+               update_freq=10 \
                icon.drawing=off \
                label.font="Hack Nerd Font:Bold:14.0" \
                label.color=0xff5a564f \

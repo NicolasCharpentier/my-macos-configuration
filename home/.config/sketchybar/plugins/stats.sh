@@ -58,7 +58,7 @@ if [ "$SENDER" = "mouse.entered" ]; then
             cmd="${cmd##*/}"
             total=$(awk -v r="$raw" -v c="$CORES" 'BEGIN { printf "%.1f", r/c }')
             ITEMS+=("$cmd (${raw}% per core)|${total}%")
-        done < <(ps -arcwwxo "%cpu,comm" | tail -n +2 | head -5)
+        done < <(ps -arcwwxo "%cpu,comm" | tail -n +2 | head -8)
     elif [ "$NAME" = "ram.stats" ]; then
         ITEMS+=("─|")
         ITEMS+=("§|TOP PROCESSES")
@@ -75,7 +75,7 @@ if [ "$SENDER" = "mouse.entered" ]; then
                 mem=$(awk -v k="$kb" 'BEGIN { printf "%.1f GB", k/1048576 }')
             fi
             ITEMS+=("$cmd (${pct}%)|$mem")
-        done < <(ps -amwwxo "%mem,rss,comm" | tail -n +2 | head -5)
+        done < <(ps -amwwxo "%mem,rss,comm" | tail -n +2 | head -8)
     fi
 
     # Load average (CPU dropdown only) — expressed as total CPU% (load × 100 / cores)
