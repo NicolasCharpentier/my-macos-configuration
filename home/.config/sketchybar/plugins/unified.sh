@@ -29,19 +29,17 @@ while IFS='|' read -r arr_id direct_id; do
 done < <(echo "$DISPLAYS_JSON" \
     | python3 -c "import json,sys; [print(f'{d[\"arrangement-id\"]}|{d[\"DirectDisplayID\"]}') for d in json.load(sys.stdin)]")
 
-# Build monitor -> arrangement-id by order
-# AeroSpace appkit-nsscreen-screens-id and SketchyBar DirectDisplayID use
-# different numbering. Match monitors to displays by enumeration order instead.
+# Build monitor -> arrangement-id via NSScreen index
+# AeroSpace's appkit-nsscreen-screens-id matches SketchyBar's arrangement-id
+# (both are 1-indexed into NSScreen.screens).
 declare -A MON_TO_ARR
 declare -A MON_NAME
 MONITOR_IDS=()
-MON_IDX=0
-while IFS='|' read -r mid mname; do
+while IFS='|' read -r mid mname nsid; do
     MONITOR_IDS+=("$mid")
     MON_NAME["$mid"]="$mname"
-    MON_TO_ARR["$mid"]="${DISPLAY_IDS[$MON_IDX]:-$((MON_IDX+1))}"
-    MON_IDX=$((MON_IDX + 1))
-done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}')
+    MON_TO_ARR["$mid"]="$nsid"
+done < <(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}|%{monitor-appkit-nsscreen-screens-id}')
 
 # Build workspace -> monitor mapping
 declare -A WS_MON
