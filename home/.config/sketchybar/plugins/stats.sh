@@ -32,10 +32,6 @@ if [ "$SENDER" = "mouse.entered" ]; then
 
     source /tmp/sketchybar_stats_cache 2>/dev/null
 
-    # Remove old popup items
-    ESCAPED=$(echo "$NAME" | sed 's/\./\\./g')
-    sketchybar --remove "/${ESCAPED}\.popup\..*/" 2>/dev/null
-
     ITEMS=()
     if [ "$NAME" = "cpu.stats" ]; then
         ITEMS+=("§|CPU")
@@ -97,40 +93,53 @@ if [ "$SENDER" = "mouse.entered" ]; then
     ITEMS+=("Disk|$DISK_USED / $DISK_TOTAL ($DISK_USAGE)")
     [ -n "$UPTIME" ] && ITEMS+=("Up|$UPTIME")
 
-    IDX=0
+    # Update pre-created slots (no --add / --remove)
+    ARGS=()
+    SLOT=0
     for entry in "${ITEMS[@]}"; do
         IFS='|' read -r lbl val <<< "$entry"
-        ITEM="$NAME.popup.$IDX"
         if [ "$lbl" = "─" ]; then
-            sketchybar --add item "$ITEM" popup."$NAME" \
-                --set "$ITEM" \
-                    icon.drawing=off \
-                    label="──────────────────────────────────────────────────" \
-                    label.font="Hack Nerd Font:Regular:10.0" \
-                    label.color=0xffc8c3bb \
-                    label.padding_left=0 \
-                    label.padding_right=0
+            ARGS+=(--set "$NAME.slot.$SLOT"
+                       drawing=on
+                       icon.drawing=off
+                       label.drawing=on
+                       "label=──────────────────────────────────────────────────"
+                       "label.font=Hack Nerd Font:Regular:10.0"
+                       label.color=0xffc8c3bb
+                       label.padding_left=0
+                       label.padding_right=0)
         elif [ "$lbl" = "§" ]; then
-            sketchybar --add item "$ITEM" popup."$NAME" \
-                --set "$ITEM" \
-                    icon.drawing=off \
-                    label="$val" \
-                    label.font="Hack Nerd Font:Bold:10.0" \
-                    label.color=0xff9a958d \
-                    label.padding_left=0
+            ARGS+=(--set "$NAME.slot.$SLOT"
+                       drawing=on
+                       icon.drawing=off
+                       label.drawing=on
+                       "label=$val"
+                       "label.font=Hack Nerd Font:Bold:10.0"
+                       label.color=0xff9a958d
+                       label.padding_left=0)
         else
-            sketchybar --add item "$ITEM" popup."$NAME" \
-                --set "$ITEM" \
-                    icon="$val" \
-                    icon.font="Hack Nerd Font:Bold:12.0" \
-                    icon.color=0xff3a3630 \
-                    icon.padding_right=8 \
-                    label="$lbl" \
-                    label.font="Hack Nerd Font:Regular:12.0" \
-                    label.color=0xff5a564f
+            ARGS+=(--set "$NAME.slot.$SLOT"
+                       drawing=on
+                       icon.drawing=on
+                       label.drawing=on
+                       "icon=$val"
+                       "icon.font=Hack Nerd Font:Bold:12.0"
+                       icon.color=0xff3a3630
+                       icon.padding_right=8
+                       "label=$lbl"
+                       "label.font=Hack Nerd Font:Regular:12.0"
+                       label.color=0xff5a564f)
         fi
-        IDX=$((IDX + 1))
+        SLOT=$((SLOT + 1))
     done
+
+    # Hide unused slots
+    while [ "$SLOT" -lt 25 ]; do
+        ARGS+=(--set "$NAME.slot.$SLOT" drawing=off)
+        SLOT=$((SLOT + 1))
+    done
+
+    sketchybar "${ARGS[@]}"
 
     sketchybar --set "$NAME" popup.drawing=on
 

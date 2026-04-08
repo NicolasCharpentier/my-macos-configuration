@@ -232,6 +232,19 @@ CMD+=(
         popup.background.border_width=1
         "script=$PLUGIN_DIR/stats.sh"
     --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global
+)
+
+# Pre-create popup slots for cpu.stats (25) and ram.stats (25)
+for widget in cpu.stats ram.stats; do
+    for i in $(seq 0 24); do
+        CMD+=(
+            --add item "$widget.slot.$i" popup."$widget"
+            --set "$widget.slot.$i" drawing=off icon.drawing=off label.drawing=off
+        )
+    done
+done
+
+CMD+=(
     --add item mic right
     --set mic
         icon="󰍬"
