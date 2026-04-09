@@ -232,11 +232,25 @@ CMD+=(
         popup.background.border_width=1
         "script=$PLUGIN_DIR/stats.sh"
     --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global
+    --add item docker.stats right
+    --set docker.stats
+        icon="󰡨"
+        "icon.font=Hack Nerd Font:Bold:17.0"
+        "label=…"
+        update_freq=30
+        popup.align=right
+        popup.height=25
+        popup.background.color=0xf0f5f2ef
+        popup.background.corner_radius=8
+        popup.background.border_color=0xffd0ccc6
+        popup.background.border_width=1
+        "script=$PLUGIN_DIR/docker.sh"
+    --subscribe docker.stats mouse.entered mouse.exited mouse.exited.global
 )
 
-# Pre-create popup slots for cpu.stats (25) and ram.stats (25)
-for widget in cpu.stats ram.stats; do
-    for i in $(seq 0 24); do
+# Pre-create popup slots for cpu.stats, ram.stats, and docker.stats (30 each)
+for widget in cpu.stats ram.stats docker.stats; do
+    for i in $(seq 0 29); do
         CMD+=(
             --add item "$widget.slot.$i" popup."$widget"
             --set "$widget.slot.$i" drawing=off icon.drawing=off label.drawing=off

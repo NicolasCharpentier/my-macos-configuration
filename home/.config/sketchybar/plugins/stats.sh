@@ -28,6 +28,7 @@ if [ "$SENDER" = "mouse.entered" ]; then
     sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
                --set cpu.stats popup.drawing=off \
                --set ram.stats popup.drawing=off \
+               --set docker.stats popup.drawing=off \
                --set ai.naming popup.drawing=off 2>/dev/null
 
     source /tmp/sketchybar_stats_cache 2>/dev/null

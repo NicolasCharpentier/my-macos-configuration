@@ -13,6 +13,7 @@ PREV_WS=""
 sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
            --set cpu.stats popup.drawing=off \
            --set ram.stats popup.drawing=off \
+           --set docker.stats popup.drawing=off \
            --set ai.naming popup.drawing=off 2>/dev/null
 
 FOCUSED_MON=$(aerospace list-workspaces --monitor all --visible \

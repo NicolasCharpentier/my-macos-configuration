@@ -29,7 +29,9 @@ fi
 # Close all other popups
 sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
            --set cpu.stats popup.drawing=off \
-           --set ram.stats popup.drawing=off 2>/dev/null
+           --set ram.stats popup.drawing=off \
+           --set docker.stats popup.drawing=off \
+           --set ai.naming popup.drawing=off 2>/dev/null
 
 # Remove old popup items
 sketchybar --remove '/ai\.naming\.popup\..*/' 2>/dev/null
