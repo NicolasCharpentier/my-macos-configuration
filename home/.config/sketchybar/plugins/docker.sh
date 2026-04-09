@@ -87,8 +87,8 @@ if [ "$SENDER" = "mouse.entered" ]; then
             [ -z "$cname" ] && continue
 
             # Determine color: gray for infrastructure containers
-            LCOLOR=0xff5a564f
-            ICOLOR=0xff3a3630
+            LCOLOR=0xff2a2520
+            ICOLOR=0xff9a958d
             case "$cname" in
                 *-database*|*-mailcatcher*|*-nginx*|*-meilisearch*) LCOLOR=0xff9a958d; ICOLOR=0xff9a958d ;;
             esac
