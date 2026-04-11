@@ -12,8 +12,12 @@
 # Tail with: tail -f /tmp/sketchybar-timelog.log
 # See docs/about-04-sketchybar.md for the full rationale.
 
+# No-op stub so sketchybarrc can call _timelog_session unconditionally even
+# when profiling is disabled. The real implementation below overrides this.
+_timelog_session() { :; }
+
 # ── DISABLED BY DEFAULT — comment the next line to re-enable profiling ──
-return 0
+# return 0
 # ────────────────────────────────────────────────────────────────────────
 
 TIMELOG_FILE="${TIMELOG_FILE:-/tmp/sketchybar-timelog.log}"

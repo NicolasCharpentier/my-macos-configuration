@@ -2,6 +2,22 @@
 
 source "$CONFIG_DIR/plugins/timelog.sh"
 
+# Topology dedup: sketchybar fires `display_change` whenever the *active*
+# display changes — which includes alt-tabbing across monitors, not just
+# real hotplug. Without this guard, every cross-monitor alt-tab runs a
+# full `unified.sh` rebuild on top of aerospace's own workspace-change
+# trigger, doubling the subprocess cost. Compare the current monitor set
+# against the cache and skip if unchanged.
+if [ "$SENDER" = "display_change" ]; then
+    TOPO_CACHE="/tmp/sketchybar-topology"
+    CURRENT_TOPO=$(aerospace list-monitors --format '%{monitor-id}' | sort | tr '\n' ',')
+    CACHED_TOPO=$(cat "$TOPO_CACHE" 2>/dev/null)
+    if [ -n "$CACHED_TOPO" ] && [ "$CURRENT_TOPO" = "$CACHED_TOPO" ]; then
+        exit 0
+    fi
+    printf '%s' "$CURRENT_TOPO" > "$TOPO_CACHE"
+fi
+
 # On system wake: refresh the bar without a full --reload.
 # Calling --reload from within a plugin can cause an infinite loop when the
 # system_woke event is re-delivered to the freshly recreated item.
