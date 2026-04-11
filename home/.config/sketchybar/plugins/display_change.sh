@@ -19,22 +19,9 @@ if [ "$SENDER" = "system_woke" ]; then
     sleep 0.2
     sketchybar --bar y_offset=0
 
-    # Fall through to the display reassignment below
+    # Fall through to the rebuild trigger below
 fi
-
-# Reassign workspace items to the correct display on monitor change.
-
-# Build mapping from DirectDisplayID -> arrangement-id using sketchybar
-# (sketchybar's display= property expects arrangement-id, not DirectDisplayID)
-declare -A DISPLAY_MAP
-while IFS='|' read -r arr_id direct_id; do
-    DISPLAY_MAP["$direct_id"]="$arr_id"
-done < <(sketchybar --query displays 2>/dev/null \
-    | python3 -c "import json,sys; [print(f'{d[\"arrangement-id\"]}|{d[\"DirectDisplayID\"]}') for d in json.load(sys.stdin)]")
 
 # Trigger a workspace change update so items re-evaluate their state
 FOCUSED=$(aerospace list-workspaces --focused 2>/dev/null)
 sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE="$FOCUSED"
-
-# Re-apply solid wallpaper after display change/wake
-"$CONFIG_DIR/plugins/set_wallpaper.sh" &
