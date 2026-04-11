@@ -2,4 +2,5 @@
 
 source "$CONFIG_DIR/plugins/timelog.sh"
 
-sketchybar --set "$NAME" label="$(date '+%H:%M:%S')"
+printf -v now '%(%H:%M:%S)T' -1
+sketchybar --set "$NAME" label="$now"

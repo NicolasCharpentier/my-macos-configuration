@@ -201,7 +201,7 @@ CMD+=(
 
     --add item clock.time right
     --set clock.time
-        update_freq=10
+        update_freq=1
         icon.drawing=off
         "label.font=Hack Nerd Font:Bold:14.0"
         label.color=0xff5a564f
