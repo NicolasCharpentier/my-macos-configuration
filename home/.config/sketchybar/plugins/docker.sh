@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 DOCKER=/usr/local/bin/docker
 CACHE=/tmp/sketchybar_docker_cache
 SLOT_COUNT=30
@@ -126,7 +128,7 @@ if [ "$SENDER" = "mouse.entered" ]; then
     exit 0
 fi
 
-if [ "$SENDER" = "mouse.exited" ] || [ "$SENDER" = "mouse.exited.global" ]; then
+if [ "$SENDER" = "mouse.exited" ]; then
     sketchybar --set "$NAME" popup.drawing=off
     kill "$(cat "/tmp/sketchybar_popup_${NAME}.pid" 2>/dev/null)" 2>/dev/null
     exit 0

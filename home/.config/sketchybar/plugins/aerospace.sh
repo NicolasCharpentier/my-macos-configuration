@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
 source "$CONFIG_DIR/plugins/icon_map.sh"
 
 SID="$1"

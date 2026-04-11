@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # AI naming control panel: icon state + click popup
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 ENABLED_FILE="$HOME/.cache/workspace-summarizer/enabled"
 COST_SESSION="$HOME/.cache/workspace-summarizer/cost.session"
 COST_TOTAL="$HOME/.cache/workspace-summarizer/cost.total"

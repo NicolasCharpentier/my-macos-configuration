@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 MID="$1"
 MNAME="$2"
 

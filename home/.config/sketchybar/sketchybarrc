@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$PLUGIN_DIR/timelog.sh"
+_timelog_session
 
 ##### Build a single batched command #####
 CMD=(
@@ -119,7 +121,7 @@ for did in "${DISPLAY_IDS[@]}"; do
 
                 # Content item: workspace name + app icons
                 --add item "unified.d$did.ws.$mid.$sid" left
-                --subscribe "unified.d$did.ws.$mid.$sid" mouse.entered mouse.exited mouse.exited.global
+                --subscribe "unified.d$did.ws.$mid.$sid" mouse.entered mouse.exited
                 --set "unified.d$did.ws.$mid.$sid"
                     display=$did
                     drawing=off
@@ -179,6 +181,14 @@ CMD+=(
     --set unified.controller
         drawing=off
         "script=$PLUGIN_DIR/unified.sh"
+
+    # Single subscriber for mouse.exited.global — batched popup close-all.
+    # Replaces per-item broadcast that previously fired 36+ handlers at once.
+    --add item popup.global_exit left
+    --set popup.global_exit
+        drawing=off
+        "script=$PLUGIN_DIR/popup_close_all.sh"
+    --subscribe popup.global_exit mouse.exited.global
 )
 
 ##### System Stats (stats_provider daemon) #####
@@ -219,7 +229,7 @@ CMD+=(
         popup.background.border_color=0xffd0ccc6
         popup.background.border_width=1
         "script=$PLUGIN_DIR/stats.sh"
-    --subscribe ram.stats mouse.entered mouse.exited mouse.exited.global
+    --subscribe ram.stats mouse.entered mouse.exited
     --add item cpu.stats right
     --set cpu.stats
         icon.drawing=off
@@ -231,7 +241,7 @@ CMD+=(
         popup.background.border_color=0xffd0ccc6
         popup.background.border_width=1
         "script=$PLUGIN_DIR/stats.sh"
-    --subscribe cpu.stats system_stats mouse.entered mouse.exited mouse.exited.global
+    --subscribe cpu.stats system_stats mouse.entered mouse.exited
     --add item docker.stats right
     --set docker.stats
         icon="󰡨"
@@ -245,7 +255,7 @@ CMD+=(
         popup.background.border_color=0xffd0ccc6
         popup.background.border_width=1
         "script=$PLUGIN_DIR/docker.sh"
-    --subscribe docker.stats mouse.entered mouse.exited mouse.exited.global
+    --subscribe docker.stats mouse.entered mouse.exited
 )
 
 # Pre-create popup slots for cpu.stats, ram.stats, and docker.stats (30 each)

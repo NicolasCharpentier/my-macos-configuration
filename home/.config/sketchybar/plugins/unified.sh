@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
 source "$CONFIG_DIR/plugins/icon_map.sh"
 
 FOCUSED_WS="$FOCUSED_WORKSPACE"
@@ -15,10 +16,6 @@ sketchybar --set '/unified\.d.*\.ws\..*/' popup.drawing=off \
            --set ram.stats popup.drawing=off \
            --set docker.stats popup.drawing=off \
            --set ai.naming popup.drawing=off 2>/dev/null
-
-FOCUSED_MON=$(aerospace list-workspaces --monitor all --visible \
-    --format '%{workspace}|%{monitor-id}|%{workspace-is-focused}' 2>/dev/null \
-    | grep '|true$' | cut -d'|' -f2)
 
 # Build display mapping (DirectDisplayID -> arrangement-id)
 # Startup race: sketchybar's query server may not be ready when this plugin
@@ -75,23 +72,20 @@ while IFS='|' read -r ws mid; do
     [ -n "$ws" ] && VISIBLE_WS["$ws"]="$mid"
 done < <(aerospace list-workspaces --monitor all --visible --format '%{workspace}|%{monitor-id}')
 
-# Pre-fetch all window icons per workspace
+# Pre-fetch all window icons per workspace via a single aerospace call.
+# Previously: 9 × `list-windows --workspace N` (~55ms). Now: 1 × `list-windows --all`.
 declare -A WS_ICONS
 declare -A WS_WIN_COUNT
 for sid in 1 2 3 4 5 6 7 8 9; do
-    WINDOWS=$(aerospace list-windows --workspace "$sid" --format '%{app-name}' 2>/dev/null)
-    WIN_COUNT=$(echo "$WINDOWS" | grep -c '[^[:space:]]')
-    ICON_STRIP=""
-    if [ "$WIN_COUNT" -gt 0 ]; then
-        while IFS= read -r app; do
-            [ -z "$app" ] && continue
-            __icon_map "$app"
-            ICON_STRIP+="$icon_result"
-        done <<< "$WINDOWS"
-    fi
-    WS_ICONS["$sid"]="${ICON_STRIP# }"
-    WS_WIN_COUNT["$sid"]="$WIN_COUNT"
+    WS_ICONS[$sid]=""
+    WS_WIN_COUNT[$sid]=0
 done
+while IFS='|' read -r sid app; do
+    [ -z "$sid" ] || [ -z "$app" ] && continue
+    __icon_map "$app"
+    WS_ICONS[$sid]+="$icon_result"
+    WS_WIN_COUNT[$sid]=$(( WS_WIN_COUNT[$sid] + 1 ))
+done < <(aerospace list-windows --all --format '%{workspace}|%{app-name}' 2>/dev/null)
 
 # ── Light theme colors ──
 # Raised tab (visible):  #f0ede8 — matches desktop wallpaper (seamless)

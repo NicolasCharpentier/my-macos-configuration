@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 # On system wake: refresh the bar without a full --reload.
 # Calling --reload from within a plugin can cause an infinite loop when the
 # system_woke event is re-delivered to the freshly recreated item.

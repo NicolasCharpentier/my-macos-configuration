@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+source "$CONFIG_DIR/plugins/timelog.sh"
 
 # Microphone mute toggle plugin
 # On click: toggle mute/unmute (preserving original volume)

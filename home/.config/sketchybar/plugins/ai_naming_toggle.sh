@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Toggle AI workspace naming on/off
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 ENABLED_FILE="$HOME/.cache/workspace-summarizer/enabled"
 mkdir -p "$(dirname "$ENABLED_FILE")"
 

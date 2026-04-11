@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Clear workspace names or reset cost counters
+
+source "$CONFIG_DIR/plugins/timelog.sh"
 # Usage: ai_naming_clear.sh [ai|all|cost-session|cost-all]
 
 MODE="$1"

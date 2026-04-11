@@ -86,3 +86,45 @@ wc -l /opt/homebrew/var/log/sketchybar/sketchybar.err.log
 ```
 
 Pattern: truncate the log, restart sketchybar (`brew services restart sketchybar`), trigger the behavior, then read what landed in the log. Much faster than adding `echo`s and wondering where they go.
+
+## Performance profiling: timelog
+
+`plugins/timelog.sh` is an opt-in profiler that instruments every `aerospace` and `sketchybar` call made from plugin scripts. It's sourced by `sketchybarrc` and every plugin that talks to those binaries, but **disabled by default via a `return 0` at the top of the file**. Comment out that line to enable; revert when done.
+
+When enabled, it defines shadow shell functions `aerospace()` and `sketchybar()` that wrap the real binaries via `command`, measure wall time with bash 5's `$EPOCHREALTIME` builtin (zero subprocess overhead), and append one line per call to `/tmp/sketchybar-timelog.log`:
+
+```
+[   12ms] unified.sh           aerospace list-windows --all --format %{workspace}|%{app-name}
+[    5ms] unified.sh           sketchybar --set unified.d1.mon.1 drawing=on label=S34J5 ...
+```
+
+Subshells inherit the functions, so `X=$(aerospace ...)` is also captured. Instrumentation overhead per wrapped call is under 0.1ms — far below the signal you're trying to measure.
+
+### Usage
+
+```bash
+# 1. Enable: comment the `return 0` line in plugins/timelog.sh
+# 2. Reset the log and restart sketchybar
+: > /tmp/sketchybar-timelog.log
+brew services restart sketchybar
+
+# 3. Trigger the behavior (alt-tab, hover, etc.) and watch
+tail -f /tmp/sketchybar-timelog.log
+
+# 4. When done: uncomment `return 0` so plugins stop logging
+```
+
+### Why this design
+
+- **Shadow functions, not call-site wrapping**: zero edits to the 100+ existing call sites. `source timelog.sh` at the top of each plugin is enough.
+- **Bash 5 required**: `$EPOCHREALTIME` is the only way to timestamp without spawning a subprocess. Any shell-based timing on bash 3.2 (`gdate`, `perl`, `python3`) adds 5–40ms per wrapped call and corrupts the measurement. macOS ships bash 3.2 as `/bin/sh`, so plugins use `#!/usr/bin/env bash` and rely on Homebrew bash being first in PATH. See [about-09-bash.md](about-09-bash.md).
+- **Disabled by default in committed form**: the `source` lines stay in every plugin so enabling is one-line toggle, but instrumentation itself is off in steady state — no log file growth, no runtime cost.
+
+### Key lessons learned from profiling this bar
+
+- **Sketchybar serializes calls under load.** Steady-state `--set` runs in 3–10ms, but when many plugins hammer the socket simultaneously, each call can block ~110ms waiting in queue. Fewer calls beats faster calls.
+- **`mouse.exited.global` is a broadcast event.** Every item subscribed to it runs its handler when *any* popup closes anywhere. If 36 items subscribe, one bar-exit fires 36 handlers. Only one invisible controller item should subscribe; see `plugins/popup_close_all.sh`.
+- **Dead code still costs subprocess time.** A bash variable assigned but never read still spawns the aerospace subprocess in the command substitution.
+- **Batch with `--all` instead of looping.** `aerospace list-windows --all --format '%{workspace}|%{app-name}'` replaces a 9-iteration loop of `list-windows --workspace N` calls. One subprocess instead of nine.
+- **Startup ≠ steady-state.** The first ~1 second after `brew services restart` has every call at ~100ms because CGS window server is settling. Don't benchmark against startup traces.
+- **Event re-triggering loops double work.** If plugin A fires `sketchybar --trigger X` and plugin B is also subscribed to X, the same downstream handler runs twice per event. Grep for `--trigger` whenever adding a new handler.

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 SID="$1"
 FILE="$HOME/.config/aerospace/workspace-names"
 SUMMARIES="$HOME/.cache/workspace-summarizer/summaries.haiku"

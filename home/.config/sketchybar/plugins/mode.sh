@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+source "$CONFIG_DIR/plugins/timelog.sh"
+
 create_bubbles() {
     local file="$1"
     local prefix="$2"
