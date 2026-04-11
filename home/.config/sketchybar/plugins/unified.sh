@@ -21,14 +21,17 @@ FOCUSED_MON=$(aerospace list-workspaces --monitor all --visible \
     | grep '|true$' | cut -d'|' -f2)
 
 # Build display mapping (DirectDisplayID -> arrangement-id)
+# Startup race: sketchybar's query server may not be ready when this plugin
+# fires on the first event after a restart. Skip rebuild — next event retries.
 DISPLAYS_JSON=$(sketchybar --query displays 2>/dev/null)
+[[ "$DISPLAYS_JSON" != \[* ]] && exit 0
 declare -A DIRECT_TO_ARR
 DISPLAY_IDS=()
 while IFS='|' read -r arr_id direct_id; do
     DIRECT_TO_ARR["$direct_id"]="$arr_id"
     DISPLAY_IDS+=("$arr_id")
 done < <(echo "$DISPLAYS_JSON" \
-    | python3 -c "import json,sys; [print(f'{d[\"arrangement-id\"]}|{d[\"DirectDisplayID\"]}') for d in json.load(sys.stdin)]")
+    | jq -r '.[] | "\(.["arrangement-id"])|\(.DirectDisplayID)"')
 
 # Build monitor -> arrangement-id via NSScreen index
 # AeroSpace's appkit-nsscreen-screens-id matches SketchyBar's arrangement-id

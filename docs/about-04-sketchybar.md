@@ -60,3 +60,29 @@ sketchybar --add item spacer_name left \
 ```
 
 Then toggle `drawing=on/off` in the update script alongside the tabs they separate. The `width` property controls the gap size in pixels.
+
+## Debugging: error logs
+
+When installed via Homebrew, sketchybar runs under `launchd` via `~/Library/LaunchAgents/homebrew.mxcl.sketchybar.plist`. The plist redirects stdout and stderr to log files:
+
+- **stderr:** `/opt/homebrew/var/log/sketchybar/sketchybar.err.log`
+- **stdout:** `/opt/homebrew/var/log/sketchybar/sketchybar.out.log`
+
+Plugin scripts inherit those file descriptors, so **every error from a plugin (e.g. `unified.sh`, `stats.sh`) lands in `sketchybar.err.log`** — syntax errors, missing binaries, failed commands, python tracebacks, everything.
+
+This is invaluable for debugging plugins that seem to "mostly work" but silently skip branches. For instance, if a plugin uses bash 4+ features (`declare -A`, `mapfile`, `**` globstar) and the shebang resolves to macOS's stock bash 3.2, the errors accumulate here while the bar keeps limping along. See [about-09-bash.md](about-09-bash.md).
+
+Useful commands:
+
+```bash
+# Live tail while debugging
+tail -f /opt/homebrew/var/log/sketchybar/sketchybar.err.log
+
+# Truncate without breaking launchd's file handle (don't `rm`)
+: > /opt/homebrew/var/log/sketchybar/sketchybar.err.log
+
+# Size check — a healthy log should be small
+wc -l /opt/homebrew/var/log/sketchybar/sketchybar.err.log
+```
+
+Pattern: truncate the log, restart sketchybar (`brew services restart sketchybar`), trigger the behavior, then read what landed in the log. Much faster than adding `echo`s and wondering where they go.
