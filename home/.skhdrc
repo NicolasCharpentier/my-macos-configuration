@@ -19,7 +19,9 @@
 # │   ZQSD+MAJ   : Bouger fenetre gauche/bas/haut/droite    │
 # │   Fleches     : Pareil que ZQSD (move avec MAJ)         │
 # │   -           : Resize -50                              │
-# │   =           : Resize +50                              │
+# │   = (+)       : Resize +50                              │
+# │   - + MAJ     : Resize -50 (opposite direction)         │
+# │   = + MAJ     : Resize +50 (opposite direction)         │
 # │   1-9         : Aller au workspace N                    │
 # │   1-9 + MAJ   : Envoyer fenetre au workspace N          │
 # │   TAB         : Workspace back-and-forth                │
@@ -54,6 +56,10 @@ lalt + shift - d : aerospace move right
 lalt - 0x18 : aerospace resize smart -50
 # + (AZERTY) → resize +50
 lalt - 0x2C : aerospace resize smart +50
+# - + SHIFT (AZERTY) → resize -50 (opposite direction)
+lalt + shift - 0x18 : aerospace resize smart-opposite -50
+# + + SHIFT (AZERTY) → resize +50 (opposite direction)
+lalt + shift - 0x2C : aerospace resize smart-opposite +50
 
 # --- Switch workspace ---
 lalt - 0x12 : aerospace workspace 1
