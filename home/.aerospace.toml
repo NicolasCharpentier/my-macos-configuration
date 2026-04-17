@@ -146,6 +146,10 @@ on-mode-changed = []
 if.app-name-regex-substring = "claude-jira-agent"
 run = "layout tiling"
 
+[[on-window-detected]]
+if.app-id = "com.cisco.secureclient.gui"
+run = "layout floating"
+
 # Trigger workspace summarizer on any new window (if AI naming not disabled)
 [[on-window-detected]]
 run = 'exec-and-forget bash -c "[ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger"'
