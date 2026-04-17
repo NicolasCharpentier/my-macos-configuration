@@ -1,5 +1,10 @@
 {
 	"font_size": 18,
 	"hot_exit": "disabled",
-	"update_check": false
+	"update_check": false,
+	"ignored_packages":
+	[
+		"Vintage",
+	],
+	"index_files": true,
 }
