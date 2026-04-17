@@ -17,7 +17,7 @@
 _timelog_session() { :; }
 
 # ── DISABLED BY DEFAULT — comment the next line to re-enable profiling ──
-return 0
+# return 0
 # ────────────────────────────────────────────────────────────────────────
 
 TIMELOG_FILE="${TIMELOG_FILE:-/tmp/sketchybar-timelog.log}"
