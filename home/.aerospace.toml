@@ -41,7 +41,7 @@ after-startup-command = [
 
 # Notify SketchyBar about workspace change
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'if [ -n "$AEROSPACE_PREV_WORKSPACE" ] && [ "$AEROSPACE_PREV_WORKSPACE" != "$AEROSPACE_FOCUSED_WORKSPACE" ]; then echo "$AEROSPACE_PREV_WORKSPACE" > /tmp/aerospace-prev-workspace; fi; sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; [ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger &'
+    'if [ -n "$AEROSPACE_PREV_WORKSPACE" ] && [ "$AEROSPACE_PREV_WORKSPACE" != "$AEROSPACE_FOCUSED_WORKSPACE" ]; then echo "$AEROSPACE_PREV_WORKSPACE" > /tmp/aerospace-prev-workspace; fi; open -g "spotspaces://refresh"; sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; [ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger &'
 ]
 
 # Start AeroSpace at login
