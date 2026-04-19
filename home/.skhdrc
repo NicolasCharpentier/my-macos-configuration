@@ -26,6 +26,7 @@
 # │   1-9 + MAJ   : Envoyer fenetre au workspace N          │
 # │   TAB         : Workspace back-and-forth                │
 # │   TAB + MAJ   : Bouger workspace vers autre monitor     │
+# │   N           : Renommer workspace focus (Spotspaces)   │
 # │   ;           : Entrer en mode "service"                │
 # │   ,           : Entrer en mode "shortcuts"              │
 # │                                                         │
@@ -87,6 +88,9 @@ lalt + shift - 0x19 : aerospace move-node-to-workspace 9; sketchybar --trigger a
 lalt - tab : aerospace workspace-back-and-forth
 # Move workspace to other monitor
 lalt + shift - tab : aerospace move-workspace-to-monitor --wrap-around next
+
+# --- Rename focused workspace (Spotspaces) ---
+lalt - n : /Users/azer/.local/bin/spotspaces-rename-workspace
 
 # --- Enter service mode ---
 # ; (AZERTY)

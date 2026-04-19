@@ -35,13 +35,14 @@ config-version = 2
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
 after-startup-command = [
     'exec-and-forget /opt/homebrew/bin/borders active_color="glow(0xFFE1A860)" inactive_color="0x00000000" width=8.0 style=round hidpi=on',
-    'exec-and-forget pgrep -x sketchybar || sketchybar',
+    # TEMPORARILY DISABLED: sketchybar replaced by custom in-house tool (beta). Re-enable by uncommenting.
+    # 'exec-and-forget pgrep -x sketchybar || sketchybar',
     'exec-and-forget rm -f ~/.cache/workspace-summarizer/enabled ~/.cache/workspace-summarizer/cost.session ~/.cache/workspace-summarizer/tokens.session',
 ]
 
 # Notify SketchyBar about workspace change
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'if [ -n "$AEROSPACE_PREV_WORKSPACE" ] && [ "$AEROSPACE_PREV_WORKSPACE" != "$AEROSPACE_FOCUSED_WORKSPACE" ]; then echo "$AEROSPACE_PREV_WORKSPACE" > /tmp/aerospace-prev-workspace; fi; sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; [ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger &'
+    'if [ -n "$AEROSPACE_PREV_WORKSPACE" ] && [ "$AEROSPACE_PREV_WORKSPACE" != "$AEROSPACE_FOCUSED_WORKSPACE" ]; then echo "$AEROSPACE_PREV_WORKSPACE" > /tmp/aerospace-prev-workspace; fi; open -g "spotspaces://refresh"; sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE; [ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger &'
 ]
 
 # Start AeroSpace at login
@@ -69,7 +70,7 @@ default-root-container-orientation = 'auto'
 # See https://nikitabobko.github.io/AeroSpace/guide#on-focus-changed-callbacks
 # See https://nikitabobko.github.io/AeroSpace/commands#move-mouse
 # Fallback value (if you omit the key): on-focused-monitor-changed = []
-on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center', 'exec-and-forget open -g "spotspaces://refresh"']
 # NEW TEST : on va encore plus loin
 on-focus-changed = ['move-mouse window-lazy-center', 'exec-and-forget bash -c "[ ! -f ~/.config/workspace-summarizer/disabled ] && ~/.local/bin/workspace-summarizer-trigger"']
 
@@ -105,12 +106,12 @@ on-mode-changed = []
 #                 See:
 #                 https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
 [gaps]
-    inner.horizontal = 20
-    inner.vertical =   20
-    outer.left =       20
-    outer.bottom =     20
-    outer.top =        [{ monitor."Built-in.*" = 30 }, 60] # SketchyBar height + gap for tab continuity
-    outer.right =      20
+    inner.horizontal = 15
+    inner.vertical =   15
+    outer.left =       15
+    outer.bottom =     15
+    outer.top =        [{ monitor."Built-in.*" = 30 }, { monitor.main = 3 }, 15]
+    outer.right =      15
 
 # 'main' binding mode declaration
 # All keybindings are managed by skhd (~/.skhdrc) — this section is intentionally empty.
@@ -146,9 +147,10 @@ on-mode-changed = []
 if.app-name-regex-substring = "claude-jira-agent"
 run = "layout tiling"
 
+# Force tiling for Xcode (floats by default)
 [[on-window-detected]]
-if.app-id = "com.cisco.secureclient.gui"
-run = "layout floating"
+if.app-id = "com.apple.dt.Xcode"
+run = "layout tiling"
 
 # Trigger workspace summarizer on any new window (if AI naming not disabled)
 [[on-window-detected]]

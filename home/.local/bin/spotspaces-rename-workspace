@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Rename the currently focused Aerospace workspace.
+# Stores `id|name` lines in ~/.config/aerospace/workspace-names and nudges
+# Spotspaces to refresh via its URL scheme. `|` in the name is preserved.
+# Empty dialog result clears the name.
+
+set -euo pipefail
+
+FILE="$HOME/.config/aerospace/workspace-names"
+mkdir -p "$(dirname "$FILE")"
+touch "$FILE"
+
+WS="$(/opt/homebrew/bin/aerospace list-workspaces --focused 2>/dev/null || true)"
+if [ -z "$WS" ]; then
+    exit 0
+fi
+
+CURRENT="$(grep "^${WS}|" "$FILE" 2>/dev/null | head -n1 | cut -d'|' -f2- || true)"
+
+RESULT="$(osascript \
+    -e "display dialog \"Name for workspace ${WS}:\" default answer \"${CURRENT}\" buttons {\"Cancel\",\"OK\"} default button \"OK\"" \
+    -e 'text returned of result' 2>/dev/null || true)"
+
+# Cancel → osascript returns non-zero, RESULT is empty, do nothing.
+if [ -z "$RESULT" ] && [ -z "$CURRENT" ]; then
+    exit 0
+fi
+
+# Rewrite the file without the previous entry for this workspace.
+TMP="$(mktemp)"
+grep -v "^${WS}|" "$FILE" > "$TMP" 2>/dev/null || true
+if [ -n "$RESULT" ]; then
+    printf '%s|%s\n' "$WS" "$RESULT" >> "$TMP"
+fi
+mv "$TMP" "$FILE"
+
+open -g "spotspaces://refresh"
