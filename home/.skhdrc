@@ -90,7 +90,7 @@ lalt - tab : aerospace workspace-back-and-forth
 lalt + shift - tab : aerospace move-workspace-to-monitor --wrap-around next
 
 # --- Rename focused workspace (Spotspaces) ---
-lalt - n : /Users/azer/.local/bin/spotspaces-rename-workspace
+lalt - n : $HOME/.local/bin/spotspaces-rename-workspace
 
 # --- Enter service mode ---
 # ; (AZERTY)
