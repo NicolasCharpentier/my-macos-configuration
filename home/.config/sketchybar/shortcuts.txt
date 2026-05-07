@@ -1,7 +1,0 @@
-B: Brave
-D: Dodo
-Esc: Exit
-G: Ghostty
-L: Lock
-M: Mic
-S: Sublime

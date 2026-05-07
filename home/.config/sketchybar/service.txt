@@ -1,5 +1,0 @@
-Del: Close other windows
-Esc: Exit
-F: Floating toggle
-R: Reset Workspace
-S: Sketchybar
