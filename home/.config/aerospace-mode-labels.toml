@@ -1,0 +1,13 @@
+[shortcuts]
+b = "Brave (new window)"
+g = "Ghostty (new window)"
+d = "Sleep"
+l = "Lock screen"
+s = "Sublime (new window)"
+p = "Toggle pin"
+
+[service]
+esc = "Reload config"
+r = "Reset workspace layout"
+f = "Toggle float/tile"
+backspace = "Close all windows but current"

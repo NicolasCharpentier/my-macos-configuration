@@ -94,11 +94,15 @@ lalt - n : $HOME/.local/bin/spotspaces-rename-workspace
 
 # --- Enter service mode ---
 # ; (AZERTY)
-lalt - 0x2B : aerospace mode service
+# Chain show-mode-help URL with hardcoded mode name because aerospace 0.20.3-Beta
+# doesn't expose the new mode in on-mode-changed (no env var, no args).
+# Sleep 0.05 lets on-mode-changed's hide-URL arrive first, so our show wins.
+# Spotspaces integration — see docs/about-10-spotspaces.md
+lalt - 0x2B : aerospace mode service ; sleep 0.05 ; open -g "spotspaces://show-mode-help?mode=service"
 
 # --- Enter shortcuts mode ---
 # , (AZERTY)
-lalt - 0x2E : aerospace mode shortcuts
+lalt - 0x2E : aerospace mode shortcuts ; sleep 0.05 ; open -g "spotspaces://show-mode-help?mode=shortcuts"
 
 # --- Join with (always available, no mode needed) ---
 lalt + shift + cmd - q : aerospace join-with left

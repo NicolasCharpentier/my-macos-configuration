@@ -21,6 +21,7 @@
 # │   D           : Dodo (sleep)                            │
 # │   L           : Lock écran                              │
 # │   S           : Sublime Text (new window)               │
+# │   P           : Toggle pin (current app ↔ workspace)    │
 # └─────────────────────────────────────────────────────────┘
 
 
@@ -85,7 +86,12 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]#,
 # A callback that runs every time binding mode changes
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
-on-mode-changed = []
+# In main → tell Spotspaces to hide its mode-help overlay.
+# In any other mode → show the help for that mode.
+# Spotspaces integration — see docs/about-10-spotspaces.md
+on-mode-changed = [
+    'exec-and-forget open -g spotspaces://hide-mode-help',
+]
 
 # Possible values: (qwerty|dvorak|colemak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -130,6 +136,7 @@ on-mode-changed = []
     d = ['mode main', 'exec-and-forget pmset sleepnow'] # dodo (sleep)
     l = ['mode main', 'exec-and-forget pmset displaysleepnow'] # lock écran
     s = ['mode main', 'exec-and-forget ~/.local/bin/new-sublime-window']
+    p = ['mode main', 'exec-and-forget ~/.local/bin/aerospace-toggle-pin.sh']
 
 # Force tiling for undecorated Tauri windows that AeroSpace floats by default
 [[on-window-detected]]
@@ -140,4 +147,11 @@ run = "layout tiling"
 [[on-window-detected]]
 if.app-id = "com.apple.dt.Xcode"
 run = "layout tiling"
+
+# Apply pins from ~/.config/aerospace-locks/registry.json on every new window.
+# Catch-all rule (no `if.*` filter) coexists with the rules above — AeroSpace
+# runs every matching `[[on-window-detected]]`, not just the first.
+# Spotspaces integration — see docs/about-10-spotspaces.md
+[[on-window-detected]]
+run = "exec-and-forget ~/.local/bin/aerospace-apply-pin.sh"
 

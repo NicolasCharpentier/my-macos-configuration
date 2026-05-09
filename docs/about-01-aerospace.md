@@ -27,3 +27,7 @@ The default AeroSpace config uses `alt` as the sole modifier, which breaks AZERT
 - Service mode `;` is remapped to AZERTY position (QWERTY `comma`)
 
 **Arrow key duplicates.** Focus (`cmd-alt-arrows`) and move (`cmd-alt-shift-arrows`) bindings are duplicated on arrow keys in addition to HJKL.
+
+### Spotspaces integration
+
+The config has hooks into [Spotspaces](about-10-spotspaces.md) — the catch-all `[[on-window-detected]]` running `aerospace-apply-pin.sh`, the `on-mode-changed` URL, the `spotspaces://refresh` calls in `on-focus-changed` / `on-focused-monitor-changed`, and the `p` binding in shortcuts mode. See `about-10-spotspaces.md` for the full picture.

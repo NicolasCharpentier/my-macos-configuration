@@ -45,3 +45,7 @@ Lives in `~/.skhdrc`. Uses hex key codes for keys that differ between AZERTY and
 | `lalt + ;` | Enter service mode |
 | `lalt + ,` | Enter shortcuts mode |
 | `lalt + shift + cmd + hjkl` | Join with direction |
+
+### Spotspaces integration
+
+The two mode-entry hotkeys (`lalt - 0x2B`, `lalt - 0x2E`) chain a `spotspaces://show-mode-help?mode=...` URL after switching modes, so the [Spotspaces](about-10-spotspaces.md) overlay knows which mode to render. The `lalt - n` rename-workspace binding also calls a Spotspaces script.
