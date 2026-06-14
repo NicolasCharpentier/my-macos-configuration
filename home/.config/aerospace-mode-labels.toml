@@ -4,6 +4,7 @@ g = "Ghostty (new window)"
 d = "Sleep"
 l = "Lock screen"
 s = "Sublime (new window)"
+v = "Screensaver"
 p = "Toggle pin"
 
 [service]

@@ -21,6 +21,7 @@
 # │   D           : Dodo (sleep)                            │
 # │   L           : Lock écran                              │
 # │   S           : Sublime Text (new window)               │
+# │   V           : Screensaver (ScreenSaverEngine)         │
 # │   P           : Toggle pin (current app ↔ workspace)    │
 # └─────────────────────────────────────────────────────────┘
 
@@ -136,6 +137,9 @@ on-mode-changed = [
     d = ['mode main', 'exec-and-forget pmset sleepnow'] # dodo (sleep)
     l = ['mode main', 'exec-and-forget pmset displaysleepnow'] # lock écran
     s = ['mode main', 'exec-and-forget ~/.local/bin/new-sublime-window']
+    v = ['mode main', 'exec-and-forget open -a ScreenSaverEngine'] # Screensaver
+    # Keep `p` (toggle pin) last: ModeHelpView renders the dynamic pin sub-list
+    # directly under it, so any binding after `p` looks orphaned below that list.
     p = ['mode main', 'exec-and-forget ~/.local/bin/aerospace-toggle-pin.sh']
 
 # Force tiling for undecorated Tauri windows that AeroSpace floats by default
