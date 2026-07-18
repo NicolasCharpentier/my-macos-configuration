@@ -152,6 +152,11 @@ run = "layout tiling"
 if.app-id = "com.apple.dt.Xcode"
 run = "layout tiling"
 
+# Ignore CleanMyMac from tiling (keep it floating)
+[[on-window-detected]]
+if.app-id = "com.macpaw.CleanMyMac-mas"
+run = "layout floating"
+
 # Apply pins from ~/.config/aerospace-locks/registry.json on every new window.
 # Catch-all rule (no `if.*` filter) coexists with the rules above — AeroSpace
 # runs every matching `[[on-window-detected]]`, not just the first.
