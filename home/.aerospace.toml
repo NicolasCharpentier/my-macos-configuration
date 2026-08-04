@@ -157,6 +157,14 @@ run = "layout tiling"
 if.app-id = "com.macpaw.CleanMyMac-mas"
 run = "layout floating"
 
+# Chrome sert uniquement aux tests d'agents : on le laisse flottant (les agents
+# le redimensionnent librement) et on l'envoie sur le second écran.
+# `secondary` = le moniteur non-principal, quel que soit son nom : portable
+# d'une machine à l'autre. Sur un setup mono-écran la commande ne fait rien.
+[[on-window-detected]]
+if.app-id = "com.google.Chrome"
+run = ["layout floating", "move-node-to-monitor secondary"]
+
 # Apply pins from ~/.config/aerospace-locks/registry.json on every new window.
 # Catch-all rule (no `if.*` filter) coexists with the rules above — AeroSpace
 # runs every matching `[[on-window-detected]]`, not just the first.
